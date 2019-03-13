@@ -1,9 +1,13 @@
 import random
 
+from pprint import pprint
+
+
 
 def monte_carlo_e_soft(env, episodes=100, policy=None, epsilon=0.01):
     if not policy:
         policy = create_random_policy(env)  # Create an empty dictionary to store state action values
+
     Q = create_state_action_dictionary(env, policy) # Empty dictionary for storing rewards for each state-action pair
     returns = {} # 3.
 
@@ -39,7 +43,6 @@ def monte_carlo_e_soft(env, episodes=100, policy=None, epsilon=0.01):
                         policy[s_t][a[0]] = 1 - epsilon + (epsilon / abs(sum(policy[s_t].values())))
                     else:
                         policy[s_t][a[0]] = (epsilon / abs(sum(policy[s_t].values())))
-
     return policy
 
 def create_random_policy(env):
@@ -92,10 +95,11 @@ def run_game(env, policy, display=True):
      return episode
 
 def test_policy(policy, env):
-      wins = 0
-      r = 100
-      for i in range(r):
-            w = run_game(env, policy, display=False)[-1][-1]
-            if w == 1:
-                  wins += 1
-      return wins / r
+    wins = 0
+    r = 100
+    for i in range(r):
+        w = run_game(env, policy, display=False)[-1][-1]
+        if w == 1:
+            wins += 1
+
+    return wins / r
