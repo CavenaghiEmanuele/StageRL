@@ -1,17 +1,26 @@
 import random
+import matplotlib.pyplot as plt
+
 
 from pprint import pprint
 
 
 
-def monte_carlo_e_soft(env, episodes=100, policy=None, epsilon=0.01):
+def monte_carlo_e_soft(env, episodes=100, policy=None, state_action_table=None, returns=None, epsilon=0.01):
     if not policy:
         policy = create_random_policy(env)  # Create an empty dictionary to store state action values
 
-    Q = create_state_action_dictionary(env, policy) # Empty dictionary for storing rewards for each state-action pair
-    returns = {} # 3.
+    if not state_action_table:
+        Q = create_state_action_dictionary(env, policy) # Empty dictionary for storing rewards for each state-action pair
+    else:
+        Q = state_action_table
+
+    if not returns:
+        returns = {} # 3.
+
 
     for _ in range(episodes): # Looping through episodes
+
         G = 0 # Store cumulative reward in G (initialized at 0)
         episode = run_game(env=env, policy=policy, display=False) # Store state, action and value respectively
 
@@ -43,7 +52,11 @@ def monte_carlo_e_soft(env, episodes=100, policy=None, epsilon=0.01):
                         policy[s_t][a[0]] = 1 - epsilon + (epsilon / abs(sum(policy[s_t].values())))
                     else:
                         policy[s_t][a[0]] = (epsilon / abs(sum(policy[s_t].values())))
-    return policy
+
+
+    agent_info = {"policy": policy, "state_action_table": Q, "returns": returns}
+
+    return agent_info
 
 def create_random_policy(env):
      policy = {}
