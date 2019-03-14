@@ -9,10 +9,45 @@ import tqdm
 import agents.MonteCarloAgent as MCA
 from argparse import ArgumentParser as parser
 
+import multiprocessing
+
 from pprint import pprint
 
 
 tqdm.monitor_interval = 0
+
+
+def run_games(agent, n_games, n_episodes):
+
+    policy = MCA.create_random_policy(enviroment)
+    agent_info ={
+            "policy": policy,
+            "state_action_table": MCA.create_state_action_dictionary(enviroment, policy),
+            "returns": {}
+        }
+
+    '''
+    Per ogni partita viene effettuato il training dell'agente e vengono poi eseguite 100
+    partite di test per controllare la percentuale di vittorie dell'agente.
+    Ogni partita è composta da un numero specificabile di episodi, default=100.
+    Al termine di ogni test viene salvato il risultato e al termine di tutte
+    le partite viene mostrato il grafico relativo.
+    '''
+    for i_game in range(n_games):
+
+        agent_info = MCA.monte_carlo_e_soft(
+            enviroment,
+            episodes = n_episodes,
+            policy = agent_info["policy"],
+            state_action_table = agent_info["state_action_table"],
+            returns = agent_info["returns"],
+            epsilon = epsilons[agent]
+            )
+        #Test dell'agente
+        tests_result[agent][i_game] = (MCA.test_policy(agent_info["policy"], enviroment))
+
+
+
 
 
 if __name__ == '__main__':
@@ -47,34 +82,17 @@ if __name__ == '__main__':
     '''
     for agent in range(len(epsilons)):
 
-        policy = MCA.create_random_policy(enviroment)
-        agent_info ={
-                "policy": policy,
-                "state_action_table": MCA.create_state_action_dictionary(enviroment, policy),
-                "returns": {}
-            }
 
-        '''
-        Per ogni partita viene effettuato il training dell'agente e vengono poi eseguite 100
-        partite di test per controllare la percentuale di vittorie dell'agente.
-        Ogni partita è composta da un numero specificabile di episodi, default=100.
-        Al termine di ogni test viene salvato il risultato e al termine di tutte
-        le partite viene mostrato il grafico relativo.
-        '''
-        for i_game in range(n_games):
+        p1 = multiprocessing.Process(target=run_games, args=(agent, n_games, n_episodes, ))
 
-            agent_info = MCA.monte_carlo_e_soft(
-                    enviroment,
-                    episodes = n_episodes,
-                    policy = agent_info["policy"],
-                    state_action_table = agent_info["state_action_table"],
-                    returns = agent_info["returns"],
-                    epsilon = epsilons[agent]
-                )
-            #Test dell'agente
-            tests_result[agent][i_game] = (MCA.test_policy(agent_info["policy"], enviroment))
+        p1.start()
+
+        p1.join()
+
         #Aggiunta della lista dei risultati al grafico
         plt.plot(tests_result[agent])
+        pprint(tests_result)
+
 
 
     legend = []
