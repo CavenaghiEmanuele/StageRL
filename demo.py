@@ -5,22 +5,19 @@ import operator
 from IPython.display import clear_output
 from time import sleep
 import itertools
-import tqdm
-import agents.MonteCarloAgent as MCA
 from argparse import ArgumentParser as parser
 
-from pprint import pprint
-
-
-tqdm.monitor_interval = 0
+import agents.MonteCarloAgent as MCA
 
 
 if __name__ == '__main__':
 
     parser = parser(prog='Demo', description='demo for agent')
-    parser.add_argument('-g', '--n_games', metavar='n_games', type=int, nargs=1, help='Number of games')
-    parser.add_argument('-e', '--n_episodes', metavar='n_episodes', type=int, nargs=1, help='Number of episodes for each game')
-    parser.add_argument('-l', '--epsilons_list', metavar='epsilons_list', type=float, nargs="*", default=[0.01], help='Epsilons value for agents (one for each agent)')
+    parser.add_argument('-n_g', '--n_games', metavar='n_games', type=int, nargs=1, help='Number of games')
+    parser.add_argument('-n_e', '--n_episodes', metavar='n_episodes', type=int, nargs=1, help='Number of episodes for each game')
+    parser.add_argument('-e_l', '--epsilons_list', metavar='epsilons_list', type=float, nargs="*", default=[0.01], help='Epsilons value for agents (one for each agent)')
+    parser.add_argument('-e', '--enviroment_name', metavar='enviroment_name', type=str, nargs=1, required=True, help='Enviroment name')
+
 
     args = parser.parse_args()
 
@@ -37,7 +34,7 @@ if __name__ == '__main__':
 
     epsilons = args.epsilons_list
     tests_result = np.zeros((len(epsilons), n_games)) #Creazione della matrice dei risultati
-    enviroment = gym.make("FrozenLake8x8-v0") #Creazione ambiente
+    enviroment = gym.make(args.enviroment_name[0]) #Creazione ambiente
 
     '''
     Per ogni epsilon specificata nella lista epsilons viene creato un agente diverso

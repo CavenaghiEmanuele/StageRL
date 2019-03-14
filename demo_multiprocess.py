@@ -5,21 +5,22 @@ import operator
 from IPython.display import clear_output
 from time import sleep
 import itertools
-import tqdm
-import agents.MonteCarloAgent as MCA
 from argparse import ArgumentParser as parser
+from multiprocessing import Pool
+import os
 
-import multiprocessing
-
-from pprint import pprint
-
-
-tqdm.monitor_interval = 0
+import agents.MonteCarloAgent as MCA
 
 
-def run_games(agent, n_games, n_episodes):
 
+'''
+Ogni agente viene allenato per n_games partite oguna di n_episodes episodi
+'''
+def run_agent(epsilon, n_games, n_episodes):
+
+    i_agent_test_result = []
     policy = MCA.create_random_policy(enviroment)
+
     agent_info ={
             "policy": policy,
             "state_action_table": MCA.create_state_action_dictionary(enviroment, policy),
@@ -33,7 +34,7 @@ def run_games(agent, n_games, n_episodes):
     Al termine di ogni test viene salvato il risultato e al termine di tutte
     le partite viene mostrato il grafico relativo.
     '''
-    for i_game in range(n_games):
+    for _ in range(n_games):
 
         agent_info = MCA.monte_carlo_e_soft(
             enviroment,
@@ -41,21 +42,22 @@ def run_games(agent, n_games, n_episodes):
             policy = agent_info["policy"],
             state_action_table = agent_info["state_action_table"],
             returns = agent_info["returns"],
-            epsilon = epsilons[agent]
-            )
+            epsilon = epsilon
+                        )
         #Test dell'agente
-        tests_result[agent][i_game] = (MCA.test_policy(agent_info["policy"], enviroment))
+        i_agent_test_result.append(MCA.test_policy(agent_info["policy"], enviroment))
 
-
-
+    return i_agent_test_result
 
 
 if __name__ == '__main__':
 
     parser = parser(prog='Demo', description='demo for agent')
-    parser.add_argument('-g', '--n_games', metavar='n_games', type=int, nargs=1, help='Number of games')
-    parser.add_argument('-e', '--n_episodes', metavar='n_episodes', type=int, nargs=1, help='Number of episodes for each game')
-    parser.add_argument('-l', '--epsilons_list', metavar='epsilons_list', type=float, nargs="*", default=[0.01], help='Epsilons value for agents (one for each agent)')
+    parser.add_argument('-n_g', '--n_games', metavar='n_games', type=int, nargs=1, help='Number of games')
+    parser.add_argument('-n_e', '--n_episodes', metavar='n_episodes', type=int, nargs=1, help='Number of episodes for each game')
+    parser.add_argument('-e_l', '--epsilons_list', metavar='epsilons_list', type=float, nargs="*", default=[0.01], help='Epsilons value for agents (one for each agent)')
+    parser.add_argument('-e', '--enviroment_name', metavar='enviroment_name', type=str, nargs=1, required=True, help='Enviroment name')
+
 
     args = parser.parse_args()
 
@@ -71,30 +73,36 @@ if __name__ == '__main__':
 
 
     epsilons = args.epsilons_list
-    tests_result = np.zeros((len(epsilons), n_games)) #Creazione della matrice dei risultati
-    enviroment = gym.make("FrozenLake8x8-v0") #Creazione ambiente
+    enviroment = gym.make(args.enviroment_name[0]) #Creazione ambiente
 
     '''
     Per ogni epsilon specificata nella lista epsilons viene creato un agente diverso
     ognuno con il rispettivo valore del parametro epsilon.
     Ogni agente è inizializzato con una policy random, una state_action_table vuota
     e un dizionario di returns vuoto.
+    Ogni agente viene associato ad un processo diverso, il numero di processi è limitato
+    al numero di core utilizzabili da python
     '''
+    #creo una lista con i parametri degli agenti
+    params = zip(
+        epsilons,
+        [n_games] * len(epsilons),
+        [n_episodes] * len(epsilons),
+    )
+
+    pool = Pool(len(os.sched_getaffinity(0))) #creo un pool di processi
+    results = pool.starmap(run_agent, params) #Ogni agente viene affidato ad un processo
+
+    pool.close()
+    pool.join() # attendo che tutti gli agenti abbiano terminato il trining per poi prseguire
+
+    #per ogni agente recupero il risultato dei test
     for agent in range(len(epsilons)):
 
-
-        p1 = multiprocessing.Process(target=run_games, args=(agent, n_games, n_episodes, ))
-
-        p1.start()
-
-        p1.join()
-
         #Aggiunta della lista dei risultati al grafico
-        plt.plot(tests_result[agent])
-        pprint(tests_result)
+        plt.plot(results[agent])
 
-
-
+    #creo la legenda del grafico, un elemento per ogni agente
     legend = []
     for i in range(len(epsilons)):
         legend.append("epsilon = " + str(epsilons[i]))
