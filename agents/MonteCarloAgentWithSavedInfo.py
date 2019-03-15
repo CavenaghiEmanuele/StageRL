@@ -4,13 +4,17 @@ from pprint import pprint
 from tqdm import tqdm
 
 
-
-def monte_carlo_control_on_policy(env, episodes=100, policy=None, epsilon=0.01):
+def monte_carlo_control_on_policy(env, episodes=100, policy=None, state_action_table=None, returns=None, epsilon=0.01):
     if not policy:
         policy = create_random_policy(env)  # Create an empty dictionary to store state action values
 
-    Q = create_state_action_dictionary(env, policy) # Empty dictionary for storing rewards for each state-action pair
-    returns = {} # 3.
+    if not state_action_table:
+        Q = create_state_action_dictionary(env, policy) # Empty dictionary for storing rewards for each state-action pair
+    else:
+        Q = state_action_table
+
+    if not returns:
+        returns = {} # 3.
 
 
     for _ in range(episodes): # Looping through episodes
@@ -27,7 +31,7 @@ def monte_carlo_control_on_policy(env, episodes=100, policy=None, epsilon=0.01):
             state_action = (s_t, a_t)
             G += r_t # Increment total reward by reward on current timestep
 
-            if not state_action in [(x[0], x[1]) for x in episode[0:i]]: #because is first visit algorithm
+            if not state_action in [(x[0], x[1]) for x in episode[0:i]]: #
                 if returns.get(state_action):
                     returns[state_action].append(G)
                 else:
@@ -47,24 +51,38 @@ def monte_carlo_control_on_policy(env, episodes=100, policy=None, epsilon=0.01):
                     else:
                         policy[s_t][a[0]] = (epsilon / abs(sum(policy[s_t].values())))
 
-    return policy
+
+    agent_info = {"policy": policy, "state_action_table": Q, "returns": returns}
+
+    return agent_info
 
 def policy_iterator(env, n_games, n_episodes, epsilon=0.01):
     tests_result = []
-    random_policy = create_random_policy(env)
-    random_policy_score = test_policy(random_policy, env)
-    best_policy = (random_policy, random_policy_score)
+    policy = create_random_policy(env)
+    random_agent_info = {
+        "policy": policy,
+        "state_action_table": create_state_action_dictionary(env, policy),
+        "returns": {}
+    }
+    random_policy_score = test_policy(policy, env)
+    best_agent_info = (random_agent_info, random_policy_score)
 
     for i in tqdm(range(n_games)):
-        new_policy =  monte_carlo_control_on_policy(env, policy=best_policy[0], episodes=n_episodes, epsilon=epsilon)
-        new_policy_score = test_policy(new_policy, env)
+        new_agent_info =  monte_carlo_control_on_policy(
+            env,
+            policy=best_agent_info[0]["policy"],
+            state_action_table=best_agent_info[0]["state_action_table"],
+            returns=best_agent_info[0]["returns"],
+            episodes=n_episodes,
+            epsilon=epsilon
+        )
+        new_policy_score = test_policy(new_agent_info["policy"], env)
         tests_result.append(new_policy_score)
-        if new_policy_score > best_policy[1]:
-            best_policy = (new_policy, new_policy_score)
+        if new_policy_score > best_agent_info[1]:
+            best_agent_info = (new_agent_info, new_policy_score)
 
-    dict = {"policy": best_policy[0], "tests_result": tests_result}
+    dict = {"agent_info": best_agent_info[0], "tests_result": tests_result}
     return dict
-
 
 
 def create_random_policy(env):
@@ -82,9 +100,6 @@ def create_state_action_dictionary(env, policy):
     for key in policy.keys():
          Q[key] = {a: 0.0 for a in range(0, env.action_space.n)}
     return Q
-
-
-
 
 def run_game(env, policy, display=True):
      env.reset()

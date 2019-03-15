@@ -36,7 +36,7 @@ def run_agent(epsilon, n_games, n_episodes):
     '''
     for _ in range(n_games):
 
-        agent_info = MCA.monte_carlo_e_soft(
+        agent_info = MCA.monte_carlo_control_on_policy(
             enviroment,
             episodes = n_episodes,
             policy = agent_info["policy"],

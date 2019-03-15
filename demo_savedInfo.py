@@ -7,7 +7,7 @@ from time import sleep
 import itertools
 from argparse import ArgumentParser as parser
 
-import agents.MonteCarloAgent as MCA
+import agents.MonteCarloAgentWithSavedInfo as MCA
 
 
 if __name__ == '__main__':
@@ -22,12 +22,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if not args.n_games:
-        n_games = 10
+        n_games = 100
     else:
         n_games = args.n_games[0]
 
     if not args.n_episodes:
-        n_episodes = 10000
+        n_episodes = 1000
     else:
         n_episodes = args.n_episodes[0]
 
@@ -51,7 +51,6 @@ if __name__ == '__main__':
             epsilon = epsilons[agent]
             )
 
-        policy = dict_result["policy"]
         tests_result = dict_result["tests_result"]
 
         plt.plot(tests_result)
