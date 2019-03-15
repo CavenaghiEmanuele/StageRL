@@ -1,1 +1,1 @@
-from agents.MonteCarloAgent import *
+from agents import *

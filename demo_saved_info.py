@@ -6,27 +6,8 @@ from IPython.display import clear_output
 from time import sleep
 import itertools
 from argparse import ArgumentParser as parser
-from multiprocessing import Pool
-import os
 
-import agents.MonteCarloAgentWithSavedInfo as MCA
-
-
-
-'''
-Ogni agente viene allenato per n_games partite oguna di n_episodes episodi
-'''
-def run_agent(epsilon, n_games, n_episodes):
-    dict_result = MCA.policy_iterator(
-        enviroment,
-        n_games,
-        n_episodes,
-        epsilon = epsilon
-        )
-
-    tests_result = dict_result["tests_result"]
-
-    return tests_result
+import agents.monte_carlo_agent_with_saved_info as MCA
 
 
 if __name__ == '__main__':
@@ -52,6 +33,7 @@ if __name__ == '__main__':
 
 
     epsilons = args.epsilons_list
+    tests_result = np.zeros((len(epsilons), n_games)) #Creazione della matrice dei risultati
     enviroment = gym.make(args.enviroment_name[0]) #Creazione ambiente
 
     '''
@@ -59,28 +41,22 @@ if __name__ == '__main__':
     ognuno con il rispettivo valore del parametro epsilon.
     Ogni agente è inizializzato con una policy random, una state_action_table vuota
     e un dizionario di returns vuoto.
-    Ogni agente viene associato ad un processo diverso, il numero di processi è limitato
-    al numero di core utilizzabili da python
     '''
-    #creo una lista con i parametri degli agenti
-    params = zip(
-        epsilons,
-        [n_games] * len(epsilons),
-        [n_episodes] * len(epsilons),
-    )
-
-    pool = Pool(len(os.sched_getaffinity(0))) #creo un pool di processi
-    results = pool.starmap(run_agent, params) #Ogni agente viene affidato ad un processo
-
-    pool.close()
-    pool.join() # attendo che tutti gli agenti abbiano terminato il trining per poi prseguire
-
-    #per ogni agente recupero il risultato dei test
     for agent in range(len(epsilons)):
-        #Aggiunta della lista dei risultati al grafico
-        plt.plot(results[agent])
 
-    #creo la legenda del grafico, un elemento per ogni agente
+        dict_result = MCA.run_agent(
+            enviroment,
+            n_games,
+            n_episodes,
+            epsilon = epsilons[agent]
+            )
+
+        tests_result = dict_result["tests_result"]
+
+        plt.plot(tests_result)
+
+
+
     legend = []
     for i in range(len(epsilons)):
         legend.append("epsilon = " + str(epsilons[i]))

@@ -1,1 +1,1 @@
-from enviroments.frozenLake import *
+from enviroments import *

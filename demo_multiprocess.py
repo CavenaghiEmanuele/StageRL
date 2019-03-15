@@ -9,7 +9,7 @@ from argparse import ArgumentParser as parser
 from multiprocessing import Pool
 import os
 
-import agents.MonteCarloAgent as MCA
+import agents.monte_carlo_agent as MCA
 
 
 
@@ -17,7 +17,7 @@ import agents.MonteCarloAgent as MCA
 Ogni agente viene allenato per n_games partite oguna di n_episodes episodi
 '''
 def run_agent(epsilon, n_games, n_episodes):
-    dict_result = MCA.policy_iterator(
+    dict_result = MCA.run_agent(
         enviroment,
         n_games,
         n_episodes,

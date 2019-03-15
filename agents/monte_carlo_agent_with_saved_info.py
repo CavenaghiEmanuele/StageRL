@@ -1,8 +1,43 @@
 import random
-import matplotlib.pyplot as plt
-from pprint import pprint
 from tqdm import tqdm
+import sys
+sys.path.insert(0, 'enviroments')
 
+import enviroment_choose
+
+def run_agent(env, n_games, n_episodes, epsilon=0.01):
+
+    global enviroment_class
+    enviroment_class = enviroment_choose.env_choose(env)
+    return policy_iterator(env, n_games, n_episodes, epsilon)
+
+def policy_iterator(env, n_games, n_episodes, epsilon=0.01):
+    tests_result = []
+    policy = create_random_policy(env)
+    random_agent_info = {
+        "policy": policy,
+        "state_action_table": create_state_action_dictionary(env, policy),
+        "returns": {}
+    }
+    random_policy_score = test_policy(policy, env)
+    best_agent_info = (random_agent_info, random_policy_score)
+
+    for i in tqdm(range(n_games)):
+        new_agent_info =  monte_carlo_control_on_policy(
+            env,
+            policy=best_agent_info[0]["policy"],
+            state_action_table=best_agent_info[0]["state_action_table"],
+            returns=best_agent_info[0]["returns"],
+            episodes=n_episodes,
+            epsilon=epsilon
+        )
+        new_policy_score = test_policy(new_agent_info["policy"], env)
+        tests_result.append(new_policy_score)
+        if new_policy_score > best_agent_info[1]:
+            best_agent_info = (new_agent_info, new_policy_score)
+
+    dict = {"agent_info": best_agent_info[0], "tests_result": tests_result}
+    return dict
 
 def monte_carlo_control_on_policy(env, episodes=100, policy=None, state_action_table=None, returns=None, epsilon=0.01):
     if not policy:
@@ -20,7 +55,7 @@ def monte_carlo_control_on_policy(env, episodes=100, policy=None, state_action_t
     for _ in range(episodes): # Looping through episodes
 
         G = 0 # Store cumulative reward in G (initialized at 0)
-        episode = run_game(env=env, policy=policy, display=False) # Store state, action and value respectively
+        episode = enviroment_class.run_game(env=env, policy=policy, display=False) # Store state, action and value respectively
 
         # for loop through reversed indices of episode array.
         # The logic behind it being reversed is that the eventual reward would be at the end.
@@ -56,33 +91,6 @@ def monte_carlo_control_on_policy(env, episodes=100, policy=None, state_action_t
 
     return agent_info
 
-def policy_iterator(env, n_games, n_episodes, epsilon=0.01):
-    tests_result = []
-    policy = create_random_policy(env)
-    random_agent_info = {
-        "policy": policy,
-        "state_action_table": create_state_action_dictionary(env, policy),
-        "returns": {}
-    }
-    random_policy_score = test_policy(policy, env)
-    best_agent_info = (random_agent_info, random_policy_score)
-
-    for i in tqdm(range(n_games)):
-        new_agent_info =  monte_carlo_control_on_policy(
-            env,
-            policy=best_agent_info[0]["policy"],
-            state_action_table=best_agent_info[0]["state_action_table"],
-            returns=best_agent_info[0]["returns"],
-            episodes=n_episodes,
-            epsilon=epsilon
-        )
-        new_policy_score = test_policy(new_agent_info["policy"], env)
-        tests_result.append(new_policy_score)
-        if new_policy_score > best_agent_info[1]:
-            best_agent_info = (new_agent_info, new_policy_score)
-
-    dict = {"agent_info": best_agent_info[0], "tests_result": tests_result}
-    return dict
 
 
 def create_random_policy(env):
@@ -101,44 +109,11 @@ def create_state_action_dictionary(env, policy):
          Q[key] = {a: 0.0 for a in range(0, env.action_space.n)}
     return Q
 
-def run_game(env, policy, display=True):
-     env.reset()
-     episode = []
-     finished = False
-
-     while not finished:
-          s = env.env.s
-          if display:
-               clear_output(True)
-               env.render()
-               sleep(1)
-
-          timestep = []
-          timestep.append(s)
-          n = random.uniform(0, sum(policy[s].values()))
-          top_range = 0
-          for prob in policy[s].items():
-             top_range += prob[1]
-             if n < top_range:
-                   action = prob[0]
-                   break
-          state, reward, finished, info = env.step(action)
-          timestep.append(action)
-          timestep.append(reward)
-
-          episode.append(timestep)
-
-     if display:
-          clear_output(True)
-          env.render()
-          sleep(1)
-     return episode
-
 def test_policy(policy, env):
     wins = 0
     r = 1000
     for i in range(r):
-        w = run_game(env, policy, display=False)[-1][-1]
+        w = enviroment_class.run_game(env, policy, display=False)[-1][-1]
         if w == 1:
             wins += 1
 
