@@ -136,7 +136,7 @@ def run_game(env, policy, display=True):
 
 def test_policy(policy, env):
     wins = 0
-    r = 100
+    r = 1000
     for i in range(r):
         w = run_game(env, policy, display=False)[-1][-1]
         if w == 1:

@@ -17,37 +17,17 @@ import agents.MonteCarloAgent as MCA
 Ogni agente viene allenato per n_games partite oguna di n_episodes episodi
 '''
 def run_agent(epsilon, n_games, n_episodes):
+    dict_result = MCA.policy_iterator(
+        enviroment,
+        n_games,
+        n_episodes,
+        epsilon = epsilon
+        )
 
-    i_agent_test_result = []
-    policy = MCA.create_random_policy(enviroment)
+    policy = dict_result["policy"]
+    tests_result = dict_result["tests_result"]
 
-    agent_info ={
-            "policy": policy,
-            "state_action_table": MCA.create_state_action_dictionary(enviroment, policy),
-            "returns": {}
-        }
-
-    '''
-    Per ogni partita viene effettuato il training dell'agente e vengono poi eseguite 100
-    partite di test per controllare la percentuale di vittorie dell'agente.
-    Ogni partita è composta da un numero specificabile di episodi, default=100.
-    Al termine di ogni test viene salvato il risultato e al termine di tutte
-    le partite viene mostrato il grafico relativo.
-    '''
-    for _ in range(n_games):
-
-        agent_info = MCA.monte_carlo_control_on_policy(
-            enviroment,
-            episodes = n_episodes,
-            policy = agent_info["policy"],
-            state_action_table = agent_info["state_action_table"],
-            returns = agent_info["returns"],
-            epsilon = epsilon
-                        )
-        #Test dell'agente
-        i_agent_test_result.append(MCA.test_policy(agent_info["policy"], enviroment))
-
-    return i_agent_test_result
+    return tests_result
 
 
 if __name__ == '__main__':
@@ -62,12 +42,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if not args.n_games:
-        n_games = 100
+        n_games = 10
     else:
         n_games = args.n_games[0]
 
     if not args.n_episodes:
-        n_episodes = 100
+        n_episodes = 10000
     else:
         n_episodes = args.n_episodes[0]
 
@@ -98,7 +78,6 @@ if __name__ == '__main__':
 
     #per ogni agente recupero il risultato dei test
     for agent in range(len(epsilons)):
-
         #Aggiunta della lista dei risultati al grafico
         plt.plot(results[agent])
 
