@@ -38,7 +38,7 @@ def monte_carlo_control_on_policy(env, episodes=100, policy=None, epsilon=0.01):
         policy = create_random_policy(env)  # Create an empty dictionary to store state action values
 
     Q = create_state_action_dictionary(env, policy) # Empty dictionary for storing rewards for each state-action pair
-    returns = {} # 3.
+    returns_number = {}
 
 
     for _ in range(episodes): # Looping through episodes
@@ -56,12 +56,12 @@ def monte_carlo_control_on_policy(env, episodes=100, policy=None, epsilon=0.01):
             G += r_t # Increment total reward by reward on current timestep
 
             if not state_action in [(x[0], x[1]) for x in episode[0:i]]: #because is first visit algorithm
-                if returns.get(state_action):
-                    returns[state_action].append(G)
+                if returns_number.get(state_action):
+                    returns_number[state_action] += 1
+                    Q[s_t][a_t] = Q[s_t][a_t] + ((1 / returns_number[state_action]) * (G - Q[s_t][a_t]))
                 else:
-                    returns[state_action] = [G]
-
-                Q[s_t][a_t] = sum(returns[state_action]) / len(returns[state_action]) # Average reward across episodes
+                    returns_number[state_action] = 1
+                    Q[s_t][a_t] = G
 
                 Q_list = list(map(lambda x: x[1], Q[s_t].items())) # Finding the action with maximum value
                 indices = [i for i, x in enumerate(Q_list) if x == max(Q_list)]
