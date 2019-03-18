@@ -37,6 +37,7 @@ if __name__ == '__main__':
     parser.add_argument('-n_e', '--n_episodes', metavar='n_episodes', type=int, nargs=1, help='Number of episodes for each game')
     parser.add_argument('-e_l', '--epsilons_list', metavar='epsilons_list', type=float, nargs="*", default=[0.01], help='Epsilons value for agents (one for each agent)')
     parser.add_argument('-e', '--enviroment_name', metavar='enviroment_name', type=str, nargs=1, required=True, help='Enviroment name')
+    parser.add_argument('-y', '--y_label_name', metavar='y_label_name', type=str, nargs=1, help='Label y name')
 
 
     args = parser.parse_args()
@@ -86,7 +87,11 @@ if __name__ == '__main__':
     for i in range(len(epsilons)):
         legend.append("epsilon = " + str(epsilons[i]))
 
-    plt.ylabel('% wins')
+    if not args.y_label_name:
+        plt.ylabel('% wins')
+    else:
+        plt.ylabel(args.y_label_name[0])
+
     plt.xlabel('Number of games (each of ' + str(n_episodes) + " episodes)" )
     plt.legend(legend, loc='upper left')
     plt.show()

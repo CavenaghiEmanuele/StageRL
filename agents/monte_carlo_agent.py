@@ -19,12 +19,12 @@ def policy_iterator(env, n_games, n_episodes, epsilon=0.01):
 
     tests_result = []
     random_policy = create_random_policy(env)
-    random_policy_score = test_policy(random_policy, env)
+    random_policy_score = enviroment_class.test_policy(random_policy, env)
     best_policy = (random_policy, random_policy_score)
 
     for i in tqdm(range(n_games)):
         new_policy =  monte_carlo_control_on_policy(env, policy=best_policy[0], episodes=n_episodes, epsilon=epsilon)
-        new_policy_score = test_policy(new_policy, env)
+        new_policy_score = enviroment_class.test_policy(new_policy, env)
         tests_result.append(new_policy_score)
         if new_policy_score > best_policy[1]:
             best_policy = (new_policy, new_policy_score)
@@ -94,14 +94,3 @@ def create_state_action_dictionary(env, policy):
     for key in policy.keys():
          Q[key] = {a: 0.0 for a in range(0, env.action_space.n)}
     return Q
-
-def test_policy(policy, env):
-
-    wins = 0
-    r = 1000
-    for i in range(r):
-        w = enviroment_class.run_game(env, policy)[-1][-1]
-        if w == 1:
-            wins += 1
-
-    return wins / r

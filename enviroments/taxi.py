@@ -27,12 +27,26 @@ def run_game(env, policy):
      return episode
 
 
-def test_policy(policy, env):
-    wins = 0
-    r = 1000
-    for i in range(r):
-        w = run_game(env, policy)[-1][-1]
-        if w == 20:
-            wins += 1
+def test_policy(policy, env, type_test="average"):
 
-    return wins / r
+    if type_test == "average":
+
+            reward = 0
+            r = 100
+            for i in range(r):
+                episode = run_game(env, policy)
+                for step in range(len(episode)):
+                    reward += episode[step][2]
+
+            return reward/r
+
+    elif type_test == "%wins":
+
+        wins = 0
+        r = 1000
+        for i in range(r):
+            w = run_game(env, policy)[-1][-1]
+            if w == 20:
+                wins += 1
+
+        return wins / r
