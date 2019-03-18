@@ -44,7 +44,7 @@ def monte_carlo_control_on_policy(env, episodes=100, policy=None, epsilon=0.01):
     for _ in range(episodes): # Looping through episodes
 
         G = 0 # Store cumulative reward in G (initialized at 0)
-        episode = enviroment_class.run_game(env=env, policy=policy, display=False) # Store state, action and value respectively
+        episode = enviroment_class.run_game(env=env, policy=policy) # Store state, action and value respectively
 
         # for loop through reversed indices of episode array.
         # The logic behind it being reversed is that the eventual reward would be at the end.
@@ -100,7 +100,7 @@ def test_policy(policy, env):
     wins = 0
     r = 1000
     for i in range(r):
-        w = enviroment_class.run_game(env, policy, display=False)[-1][-1]
+        w = enviroment_class.run_game(env, policy)[-1][-1]
         if w == 1:
             wins += 1
 

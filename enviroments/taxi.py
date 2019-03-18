@@ -32,7 +32,7 @@ def test_policy(policy, env):
     r = 1000
     for i in range(r):
         w = run_game(env, policy)[-1][-1]
-        if w == 1:
+        if w == 20:
             wins += 1
 
     return wins / r

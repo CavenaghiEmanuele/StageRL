@@ -11,6 +11,7 @@ def run_agent(env, n_games, n_episodes, epsilon=0.01):
     enviroment_class = enviroment_choose.env_choose(env)
     return policy_iterator(env, n_games, n_episodes, epsilon)
 
+
 def policy_iterator(env, n_games, n_episodes, epsilon=0.01):
     tests_result = []
     policy = create_random_policy(env)
@@ -19,7 +20,7 @@ def policy_iterator(env, n_games, n_episodes, epsilon=0.01):
         "state_action_table": create_state_action_dictionary(env, policy),
         "returns_number": {}
     }
-    random_policy_score = test_policy(policy, env)
+    random_policy_score = enviroment_class.test_policy(policy, env)
     best_agent_info = (random_agent_info, random_policy_score)
 
     for i in tqdm(range(n_games)):
@@ -31,7 +32,7 @@ def policy_iterator(env, n_games, n_episodes, epsilon=0.01):
             episodes=n_episodes,
             epsilon=epsilon
         )
-        new_policy_score = test_policy(new_agent_info["policy"], env)
+        new_policy_score = enviroment_class.test_policy(new_agent_info["policy"], env)
         tests_result.append(new_policy_score)
         if new_policy_score > best_agent_info[1]:
             best_agent_info = (new_agent_info, new_policy_score)
@@ -54,7 +55,7 @@ def monte_carlo_control_on_policy(env, episodes=100, policy=None, state_action_t
     for _ in range(episodes): # Looping through episodes
 
         G = 0 # Store cumulative reward in G (initialized at 0)
-        episode = enviroment_class.run_game(env=env, policy=policy, display=False) # Store state, action and value respectively
+        episode = enviroment_class.run_game(env=env, policy=policy) # Store state, action and value respectively
 
         # for loop through reversed indices of episode array.
         # The logic behind it being reversed is that the eventual reward would be at the end.
@@ -110,13 +111,3 @@ def create_state_action_dictionary(env, policy):
     for key in policy.keys():
          Q[key] = {a: 0.0 for a in range(0, env.action_space.n)}
     return Q
-
-def test_policy(policy, env):
-    wins = 0
-    r = 1000
-    for i in range(r):
-        w = enviroment_class.run_game(env, policy, display=False)[-1][-1]
-        if w == 1:
-            wins += 1
-
-    return wins / r
