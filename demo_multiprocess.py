@@ -24,7 +24,6 @@ def run_agent(epsilon, n_games, n_episodes):
         epsilon = epsilon
         )
 
-    policy = dict_result["policy"]
     tests_result = dict_result["tests_result"]
 
     return tests_result
@@ -39,16 +38,15 @@ if __name__ == '__main__':
     parser.add_argument('-e', '--enviroment_name', metavar='enviroment_name', type=str, nargs=1, required=True, help='Enviroment name')
     parser.add_argument('-y', '--y_label_name', metavar='y_label_name', type=str, nargs=1, help='Label y name')
 
-
     args = parser.parse_args()
 
     if not args.n_games:
-        n_games = 10
+        n_games = 100
     else:
         n_games = args.n_games[0]
 
     if not args.n_episodes:
-        n_episodes = 10000
+        n_episodes = 1000
     else:
         n_episodes = args.n_episodes[0]
 

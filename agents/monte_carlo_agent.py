@@ -5,9 +5,6 @@ sys.path.insert(0, 'enviroments')
 
 import enviroment_choose
 
-
-
-
 def run_agent(env, n_games, n_episodes, epsilon=0.01):
 
     global enviroment_class
@@ -16,30 +13,44 @@ def run_agent(env, n_games, n_episodes, epsilon=0.01):
 
 
 def policy_iterator(env, n_games, n_episodes, epsilon=0.01):
-
     tests_result = []
-    random_policy = create_random_policy(env)
-    random_policy_score = enviroment_class.test_policy(random_policy, env)
-    best_policy = (random_policy, random_policy_score)
+    policy = create_random_policy(env)
+    random_agent_info = {
+        "policy": policy,
+        "state_action_table": create_state_action_dictionary(env, policy),
+        "returns_number": {}
+    }
+    random_policy_score = enviroment_class.test_policy(policy, env)
+    best_agent_info = (random_agent_info, random_policy_score)
 
     for i in tqdm(range(n_games)):
-        new_policy =  monte_carlo_control_on_policy(env, policy=best_policy[0], episodes=n_episodes, epsilon=epsilon)
-        new_policy_score = enviroment_class.test_policy(new_policy, env)
+        new_agent_info =  monte_carlo_control_on_policy(
+            env,
+            policy=best_agent_info[0]["policy"],
+            state_action_table=best_agent_info[0]["state_action_table"],
+            returns_number=best_agent_info[0]["returns_number"],
+            episodes=n_episodes,
+            epsilon=epsilon
+        )
+        new_policy_score = enviroment_class.test_policy(new_agent_info["policy"], env)
         tests_result.append(new_policy_score)
-        if new_policy_score > best_policy[1]:
-            best_policy = (new_policy, new_policy_score)
+        if new_policy_score > best_agent_info[1]:
+            best_agent_info = (new_agent_info, new_policy_score)
 
-    dict = {"policy": best_policy[0], "tests_result": tests_result}
+    dict = {"agent_info": best_agent_info[0], "tests_result": tests_result}
     return dict
 
-def monte_carlo_control_on_policy(env, episodes=100, policy=None, epsilon=0.01):
-
+def monte_carlo_control_on_policy(env, episodes=100, policy=None, state_action_table=None, returns_number=None, epsilon=0.01):
     if not policy:
         policy = create_random_policy(env)  # Create an empty dictionary to store state action values
 
-    Q = create_state_action_dictionary(env, policy) # Empty dictionary for storing rewards for each state-action pair
-    returns_number = {}
+    if not state_action_table:
+        Q = create_state_action_dictionary(env, policy) # Empty dictionary for storing rewards for each state-action pair
+    else:
+        Q = state_action_table
 
+    if not returns_number:
+        returns_number = {}
 
     for _ in range(episodes): # Looping through episodes
 
@@ -56,6 +67,7 @@ def monte_carlo_control_on_policy(env, episodes=100, policy=None, epsilon=0.01):
             G += r_t # Increment total reward by reward on current timestep
 
             if not state_action in [(x[0], x[1]) for x in episode[0:i]]: #because is first visit algorithm
+
                 if returns_number.get(state_action):
                     returns_number[state_action] += 1
                     Q[s_t][a_t] = Q[s_t][a_t] + ((1 / returns_number[state_action]) * (G - Q[s_t][a_t]))
@@ -75,7 +87,9 @@ def monte_carlo_control_on_policy(env, episodes=100, policy=None, epsilon=0.01):
                     else:
                         policy[s_t][a[0]] = (epsilon / abs(sum(policy[s_t].values())))
 
-    return policy
+    agent_info = {"policy": policy, "state_action_table": Q, "returns_number": returns_number}
+
+    return agent_info
 
 
 

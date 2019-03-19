@@ -23,12 +23,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if not args.n_games:
-        n_games = 10
+        n_games = 100
     else:
         n_games = args.n_games[0]
 
     if not args.n_episodes:
-        n_episodes = 10000
+        n_episodes = 1000
     else:
         n_episodes = args.n_episodes[0]
 
@@ -52,7 +52,6 @@ if __name__ == '__main__':
             epsilon = epsilons[agent]
             )
 
-        policy = dict_result["policy"]
         tests_result = dict_result["tests_result"]
 
         plt.plot(tests_result)
@@ -67,6 +66,7 @@ if __name__ == '__main__':
         plt.ylabel('% wins')
     else:
         plt.ylabel(args.y_label_name[0])
+
     plt.xlabel('Number of games (each of ' + str(n_episodes) + " episodes)" )
     plt.legend(legend, loc='upper left')
     plt.show()
