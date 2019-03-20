@@ -37,3 +37,20 @@ def test_policy(policy, env):
             wins += 1
 
     return wins / r
+
+def create_random_policy(env):
+     policy = {}
+     for key in range(0, env.observation_space.n):
+          current_end = 0
+          p = {}
+          for action in range(0, env.action_space.n):
+               p[action] = 1 / env.action_space.n
+          policy[key] = p
+     return policy
+
+
+def create_state_action_dictionary(env, policy):
+    Q = {}
+    for key in policy.keys():
+         Q[key] = {a: 0.0 for a in range(0, env.action_space.n)}
+    return Q

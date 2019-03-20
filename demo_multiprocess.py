@@ -44,7 +44,7 @@ if __name__ == '__main__':
         n_games = args.n_games[0]
 
     if not args.n_episodes:
-        n_episodes = 1000
+        n_episodes = 100
     else:
         n_episodes = args.n_episodes[0]
 
