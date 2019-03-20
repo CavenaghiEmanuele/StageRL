@@ -6,8 +6,9 @@ def run_game(env, policy):
      episode = []
      finished = False
 
+     state = env.action_space.sample()
+
      while not finished:
-          state = env.env.s
 
           timestep = []
           timestep.append(state)

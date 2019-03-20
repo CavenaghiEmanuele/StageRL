@@ -11,8 +11,6 @@ import os
 
 import agents.monte_carlo_agent as MCA
 
-
-
 '''
 Ogni agente viene allenato per n_games partite oguna di n_episodes episodi
 '''
@@ -52,6 +50,21 @@ if __name__ == '__main__':
 
 
     epsilons = args.epsilons_list
+
+    gym.register(
+        id='FrozenLakeNotSlippery8x8-v0',
+        entry_point='gym.envs.toy_text:FrozenLakeEnv',
+        kwargs={'map_name' : '8x8', 'is_slippery': False},
+        max_episode_steps=1000,
+    )
+
+    gym.register(
+        id='FrozenLakeNotSlippery4x4-v0',
+        entry_point='gym.envs.toy_text:FrozenLakeEnv',
+        kwargs={'map_name' : '4x4', 'is_slippery': False},
+        max_episode_steps=1000,
+    )
+
     enviroment = gym.make(args.enviroment_name[0]) #Creazione ambiente
 
     '''
