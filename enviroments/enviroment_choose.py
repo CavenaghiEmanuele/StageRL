@@ -13,3 +13,15 @@ def env_choose(env):
     elif  env_name == "Taxi-v2":
 
         return importlib.import_module("taxi")
+
+    elif  env_name == "Roulette-v0":
+
+        return importlib.import_module("roulette")
+
+    elif  env_name == "Blackjack-v0":
+
+        return importlib.import_module("blackjack")
+
+    elif  env_name == "NChain-v0":
+
+        return importlib.import_module("nchain")
