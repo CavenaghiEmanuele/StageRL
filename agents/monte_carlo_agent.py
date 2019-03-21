@@ -9,10 +9,10 @@ def run_agent(env, n_games, n_episodes, epsilon=0.01):
 
     global enviroment_class
     enviroment_class = enviroment_choose.env_choose(env)
-    return policy_iterator(env, n_games, n_episodes, epsilon)
+    return policy_iteration(env, n_games, n_episodes, epsilon)
 
 
-def policy_iterator(env, n_games, n_episodes, epsilon=0.01):
+def policy_iteration(env, n_games, n_episodes, epsilon=0.01):
     tests_result = []
     policy = enviroment_class.create_random_policy(env)
     random_agent_info = {
@@ -24,7 +24,7 @@ def policy_iterator(env, n_games, n_episodes, epsilon=0.01):
     best_agent_info = (random_agent_info, random_policy_score)
 
     for i in tqdm(range(n_games)):
-        new_agent_info =  monte_carlo_control_on_policy(
+        new_agent_info =  monte_carlo_control(
             env,
             policy=best_agent_info[0]["policy"],
             state_action_table=best_agent_info[0]["state_action_table"],
@@ -40,7 +40,7 @@ def policy_iterator(env, n_games, n_episodes, epsilon=0.01):
     dict = {"agent_info": best_agent_info[0], "tests_result": tests_result}
     return dict
 
-def monte_carlo_control_on_policy(env, episodes=100, policy=None, state_action_table=None, returns_number=None, epsilon=0.01):
+def monte_carlo_control(env, episodes=100, policy=None, state_action_table=None, returns_number=None, epsilon=0.01):
     if not policy:
         policy = enviroment_class.create_random_policy(env)  # Create an empty dictionary to store state action values
 
