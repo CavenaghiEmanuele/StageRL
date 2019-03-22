@@ -1,4 +1,5 @@
 import random
+import itertools as it
 
 def run_game(env, policy):
      env.reset()
@@ -87,25 +88,11 @@ def test_policy(policy, env, type_test="average"):
         return wins / r
 
 
+def number_states(env):
+
+    tmp = [range(0, 32), range(0, 11), [True, False]]
+    return list(it.product(*tmp))
 
 
-def create_random_policy(env):
-    action_space = env.action_space.n #Azioni disponibili
-    policy = {}
-    for i in range(0, 32):
-        for j in range(0, 11):
-            for k in [True, False]:
-                current_end = 0
-                p = {}
-                for action in range(0, action_space):
-                    p[action] = 1 / action_space
-                policy[(i, j, k)] = p
-    return policy
-
-
-def create_state_action_dictionary(env, policy):
-    action_space = env.action_space.n #Azioni disponibili
-    Q = {}
-    for key in policy.keys():
-         Q[key] = {a: 0.0 for a in range(0, action_space)}
-    return Q
+def number_actions(env):
+    return env.action_space.n

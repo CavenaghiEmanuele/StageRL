@@ -75,33 +75,16 @@ def test_policy(policy, env, type_test="average"):
         return stop / r
 
 
-def create_random_policy(env, can_walking_away=True):
-    observation_space = 38 #numero di stati
-    action_space = 0
-    
-    if can_walking_away:
-        action_space = 38 #Azioni disponibili
-    else:
-        action_space = 37 #Azioni disponibili
-
-    policy = {}
-    for key in range(0, observation_space):
-        current_end = 0
-        p = {}
-        for action in range(0, action_space):
-            p[action] = 1 / action_space
-        policy[key] = p
-    return policy
+def number_states(env):
+    return list(range(0, 38)) #numero di stati
 
 
-def create_state_action_dictionary(env, policy, can_walking_away=True):
+def number_actions(env, can_walking_away=True):
+
     action_space = 0
     if can_walking_away:
         action_space = 38 #Azioni disponibili
     else:
         action_space = 37 #Azioni disponibili
 
-    Q = {}
-    for key in policy.keys():
-         Q[key] = {a: 0.0 for a in range(0, action_space)}
-    return Q
+    return action_space

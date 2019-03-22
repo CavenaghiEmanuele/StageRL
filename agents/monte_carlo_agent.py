@@ -14,10 +14,10 @@ def run_agent(env, n_games, n_episodes, epsilon=0.01):
 
 def policy_iteration(env, n_games, n_episodes, epsilon=0.01):
     tests_result = []
-    policy = enviroment_class.create_random_policy(env)
+    policy = create_random_policy(env)
     random_agent_info = {
         "policy": policy,
-        "state_action_table": enviroment_class.create_state_action_dictionary(env, policy),
+        "state_action_table": create_state_action_dictionary(env, policy),
         "returns_number": {}
     }
     random_policy_score = enviroment_class.test_policy(policy, env)
@@ -42,7 +42,7 @@ def policy_iteration(env, n_games, n_episodes, epsilon=0.01):
 
 def monte_carlo_control(env, episodes=100, policy=None, state_action_table=None, returns_number=None, epsilon=0.01):
     if not policy:
-        policy = enviroment_class.create_random_policy(env)  # Create an empty dictionary to store state action values
+        policy = create_random_policy(env)  # Create an empty dictionary to store state action values
 
     if not state_action_table:
         Q = enviroment_class.create_state_action_dictionary(env, policy) # Empty dictionary for storing rewards for each state-action pair
@@ -90,3 +90,22 @@ def monte_carlo_control(env, episodes=100, policy=None, state_action_table=None,
     agent_info = {"policy": policy, "state_action_table": Q, "returns_number": returns_number}
 
     return agent_info
+
+
+def create_random_policy(env):
+    action_space = enviroment_class.number_actions(env) #Azioni disponibili
+    policy = {}
+    for i in enviroment_class.number_states(env):
+        current_end = 0
+        p = {}
+        for action in range(0, action_space):
+            p[action] = 1 / action_space
+        policy[i] = p
+    return policy
+
+def create_state_action_dictionary(env, policy):
+    action_space = enviroment_class.number_actions(env) #Azioni disponibili
+    Q = {}
+    for key in policy.keys():
+         Q[key] = {a: 0.0 for a in range(0, action_space)}
+    return Q

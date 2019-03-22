@@ -61,14 +61,14 @@ if __name__ == '__main__':
     '''
     for agent in range(len(epsilons)):
 
-        dict_result = DPA.run_agent(
+        dict_result = MCA.run_agent(
             enviroment,
             n_games,
             n_episodes,
             epsilon = epsilons[agent]
             )
 
-        #tests_result = dict_result["tests_result"]
+        tests_result = dict_result["tests_result"]
 
         plt.plot(tests_result)
 
