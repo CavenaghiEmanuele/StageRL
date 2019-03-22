@@ -28,11 +28,40 @@ def run_game(env, policy):
      return episode
 
 
+def run_game_for_test(env, policy):
+    env.reset()
+    episode = []
+    finished = False
+
+    state = env.action_space.sample()
+
+    while not finished:
+
+        timestep = []
+        timestep.append(state)
+
+        action_max = [0, -1]
+        for prob in policy[state].items():
+
+            if prob[1] > action_max[1]:
+                action_max = prob
+
+        action = action_max[0]
+
+        state, reward, finished, info = env.step(action)
+        timestep.append(action)
+        timestep.append(reward)
+
+        episode.append(timestep)
+
+    return episode
+
+
 def test_policy(policy, env):
     wins = 0
     r = 1000
     for i in range(r):
-        w = run_game(env, policy)[-1][-1]
+        w = run_game_for_test(env, policy)[-1][-1]
         if w == 1:
             wins += 1
 
@@ -45,3 +74,6 @@ def number_states(env):
 
 def number_actions(env):
     return env.action_space.n
+
+def probability(env):
+    return env.env.P

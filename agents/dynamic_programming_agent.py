@@ -1,152 +1,93 @@
 import numpy as np
+import copy
 import random
+import enviroment_choose
 from tqdm import tqdm
 import sys
 sys.path.insert(0, 'enviroments')
-
-import enviroment_choose
 
 
 def run_agent(env, n_games, n_episodes, epsilon=0.01):
 
     global enviroment_class
     enviroment_class = enviroment_choose.env_choose(env)
-    #return policy_iteration(env, n_games, n_episodes, epsilon)
-    return policy_iteration(env, n_games)
-
-
-def policy_iteration(env, n_games, discount_factor=1.0, max_iterations=1e9):
-
-    tests_result = []
-
-    # Start with a random policy
-    policy = enviroment_class.create_random_policy(env)
+    tmp = policy_iteration(env)
     agent_info = {
-        "policy": policy,
-        "state_action_table": enviroment_class.create_state_action_dictionary(env, policy),
-        "returns_number": {}
+        "policy": tmp[0],
+        "state_action_table": tmp[1]
     }
 
-    # Repeat until convergence or critical number of iterations reached
-    for i in tqdm(range(int(1000))):
+    policy_dict = policy_matrix_to_dict(agent_info["policy"])
 
-        # Evaluate current policy
-        V = policy_evaluation(env, policy, discount_factor=discount_factor)
+    tests_result = []
+    for _ in tqdm(range(0, 100)):
+
+        test = enviroment_class.test_policy(policy_dict, env)
+        tests_result.append(test)
+
+    return {"agent_info": agent_info, "tests_result": tests_result}
+
+
+
+def policy_iteration(env, gamma=1, theta=1e-8, max_iteration=1e6):
+    policy = np.ones([len(enviroment_class.number_states(env)), enviroment_class.number_actions(env)]) / enviroment_class.number_actions(env)
+    for _ in tqdm(range(int(max_iteration))):
+        V = policy_evaluation(env, policy, gamma, theta)
         new_policy = policy_improvement(env, V)
 
-        # Stop if the policy is unchanged after an improvement step
-        if (new_policy == policy):
+        # OPTION 1: stop if the policy is unchanged after an improvement step
+        if (new_policy == policy).all():
             break;
 
-        # Stop if the value function estimates for successive policies has converged
-        #if np.max(abs(policy_evaluation(env, policy) - policy_evaluation(env, new_policy))) < theta*1e2:
+        # OPTION 2: stop if the value function estimates for successive policies has converged
+        # if np.max(abs(policy_evaluation(env, policy) - policy_evaluation(env, new_policy))) < theta*1e2:
         #    break;
 
-        policy = new_policy
-
-
+        policy = copy.copy(new_policy)
     return policy, V
 
 
-
-
+def policy_evaluation(env, policy, gamma=1, theta=1e-8):
+    V = np.zeros(len(enviroment_class.number_states(env)))
+    while True:
+        delta = 0
+        for s in range(len(enviroment_class.number_states(env))):
+            Vs = 0
+            for a, action_prob in enumerate(policy[s]):
+                for prob, next_state, reward, done in enviroment_class.probability(env)[s][a]: #####################################
+                    Vs += action_prob * prob * (reward + gamma * V[next_state])
+            delta = max(delta, np.abs(V[s]-Vs))
+            V[s] = Vs
+        if delta < theta:
+            break
+    return V
 
 
 def policy_improvement(env, V, gamma=1):
+    policy = np.zeros([len(enviroment_class.number_states(env)), enviroment_class.number_actions(env)]) / enviroment_class.number_actions(env)
+    for s in range(len(enviroment_class.number_states(env))):
+        q = q_from_v(env, V, s, gamma)
 
-    # Start with a random policy
-    policy = enviroment_class.create_random_policy(env)
-
-    for state in policy.keys():
-
-        for action in policy[state].keys():
-            policy[state][action] = 0
-
-        best_action = np.argmax(policy[state])
-        policy[state][best_action] = 1
+        best_a = np.argwhere(q==np.max(q)).flatten()
+        policy[s] = np.sum([np.eye(enviroment_class.number_actions(env))[i] for i in best_a], axis=0)/len(best_a)
 
     return policy
 
 
+def q_from_v(env, V, s, gamma=1):
+    q = np.zeros(enviroment_class.number_actions(env))
+    for a in range(enviroment_class.number_actions(env)):
+        for prob, next_state, reward, done in enviroment_class.probability(env)[s][a]: ##############################################à
+            q[a] += prob * (reward + gamma * V[next_state])
+    return q
 
 
-def policy_evaluation(env, policy, discount_factor=1.0, theta=1e-8, max_iterations=1e9):
-        # Initialize a value function for each state as zero
-        V = [0 for i in policy.keys()]
-        # Repeat until change in value is below the threshold
-        for i in range(int(max_iterations)):
-                # Initialize a change of value function as zero
-                delta = 0
-                # Iterate though each state
-                for state in policy.keys():
-                       # Initial a new value of current state
-                       v = 0
-                       # Try all possible actions which can be taken from this state
-                       for action in policy[state]:
-                           action_probability = policy[state][action]
-                           # Check how good next state will be
-                           for state_probability, next_state, reward, terminated in env.env.P[state][action]:
-                               # Calculate the expected value
-                               v += action_probability * state_probability * (reward + discount_factor * V[next_state])
+def policy_matrix_to_dict(policy):
 
-                       delta = max(delta, np.abs(V[state] - v)) # Calculate the absolute change of value function
-                       V[state] = v # Update value function
-
-                # Terminate if value change is insignificant
-                if delta < theta:
-                        return V
-
-
-def one_step_lookahead(env, policy, state, V, discount_factor):
-        action_values = np.zeros(len(policy[state]))
+    dict = {}
+    for state in range(len(policy)):
+        p = {}
         for action in range(len(policy[state])):
-                for probability, next_state, reward, terminated in env.env.P[state][action]:
-                        action_values[action] += probability * (reward + discount_factor * V[next_state])
-        return action_values
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-def value_iteration(environment, discount_factor=1.0, theta=1e-9, max_iterations=1e9):
-        # Initialize state-value function with zeros for each environment state
-        V = np.zeros(environment.nS)
-        for i in range(int(max_iterationsations)):
-                # Early stopping condition
-                delta = 0
-                # Update each state
-                for state in range(environment.nS):
-                        # Do a one-step lookahead to calculate state-action values
-                        action_value = one_step_lookahead(environment, state, V, discount_factor)
-                        # Select best action to perform based on the highest state-action value
-                        best_action_value = np.max(action_value)
-                        # Calculate change in value
-                        delta = max(delta, np.abs(V[state] - best_action_value))
-                        # Update the value function for current state
-                        V[state] = best_action_value
-                        # Check if we can stop
-                if delta < theta:
-                        print(f'Value-iteration converged at iteration#{i}.')
-                        break
-
-        # Create a deterministic policy using the optimal value function
-        policy = np.zeros([environment.nS, environment.nA])
-        for state in range(environment.nS):
-                # One step lookahead to find the best action for this state
-                action_value = one_step_lookahead(environment, state, V, discount_factor)
-                # Select best action based on the highest state-action value
-                best_action = np.argmax(action_value)
-                # Update the policy to perform a better action at a current state
-                policy[state, best_action] = 1.0
-        return policy, V
-'''
+            p[action] = policy[state][action]
+        dict[state] = p
+    return dict
