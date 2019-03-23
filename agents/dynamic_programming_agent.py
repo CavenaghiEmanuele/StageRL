@@ -7,11 +7,11 @@ import sys
 sys.path.insert(0, 'enviroments')
 
 
-def run_agent(env, n_games, n_episodes, epsilon=0.01):
+def run_agent(env, gamma=1, theta=1e-8, max_iteration=1e6):
 
     global enviroment_class
     enviroment_class = enviroment_choose.env_choose(env)
-    tmp = policy_iteration(env)
+    tmp = policy_iteration(env, gamma, theta, max_iteration)
     agent_info = {
         "policy": tmp[0],
         "state_action_table": tmp[1]
