@@ -58,7 +58,7 @@ def run_game_for_test(env, policy):
 def test_policy(policy, env):
 
     reward = 0
-    r = 1000
+    r = 100
     for i in range(r):
         episode = run_game_for_test(env, policy)
         for step in range(len(episode)):

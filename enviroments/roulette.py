@@ -73,7 +73,7 @@ def test_policy(policy, env, type_test="average"):
     elif type_test == "%wins":
 
         wins = 0
-        r = 1000
+        r = 100
         for i in range(r):
             w = run_game(env, policy)[-1][-1]
             if w >= 1:
@@ -84,7 +84,7 @@ def test_policy(policy, env, type_test="average"):
     elif type_test == "%loss":
 
         loss = 0
-        r = 1000
+        r = 100
         for i in range(r):
             w = run_game(env, policy)[-1][-1]
             if w == -1:
@@ -95,7 +95,7 @@ def test_policy(policy, env, type_test="average"):
     elif type_test == "%walking away":
 
         stop = 0
-        r = 1000
+        r = 100
         for i in range(r):
             w = run_game(env, policy)[-1][-1]
             if w == 0:

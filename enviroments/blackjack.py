@@ -62,7 +62,7 @@ def test_policy(policy, env, type_test="average"):
     if type_test == "average":
 
         reward = 0
-        r = 1000
+        r = 100
         for i in range(r):
             episode = run_game_for_test(env, policy)
             for step in range(len(episode)):
@@ -74,7 +74,7 @@ def test_policy(policy, env, type_test="average"):
     elif type_test == "total":
 
         reward = 0
-        r = 1000
+        r = 100
         for i in range(r):
             episode = run_game(env, policy)
             for step in range(len(episode)):
@@ -86,7 +86,7 @@ def test_policy(policy, env, type_test="average"):
     elif type_test == "%wins":
 
         wins = 0
-        r = 1000
+        r = 100
         for i in range(r):
             w = run_game(env, policy)[-1][-1]
             if w == 1:
@@ -97,7 +97,7 @@ def test_policy(policy, env, type_test="average"):
     elif type_test == "%drawing":
 
         wins = 0
-        r = 1000
+        r = 100
         for i in range(r):
             w = run_game(env, policy)[-1][-1]
             if w == 0:
@@ -108,7 +108,7 @@ def test_policy(policy, env, type_test="average"):
     elif type_test == "%loss":
 
         wins = 0
-        r = 1000
+        r = 100
         for i in range(r):
             w = run_game(env, policy)[-1][-1]
             if w == -1:

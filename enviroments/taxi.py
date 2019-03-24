@@ -32,7 +32,7 @@ def test_policy(policy, env, type_test="average"):
     if type_test == "average":
 
             reward = 0
-            r = 1000
+            r = 100
             for i in range(r):
                 episode = run_game(env, policy)
                 for step in range(len(episode)):

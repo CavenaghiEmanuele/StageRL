@@ -50,9 +50,9 @@ def policy_iteration(env, gamma=1, theta=1e-8, max_iteration=1e6):
 
 def policy_evaluation(env, policy, gamma=1, theta=1e-8):
     V = np.zeros(len(enviroment_class.number_states(env)))
-    # Tronchiamo la valutazione della policy dopo 1000 iterazioni
+    # Tronchiamo la valutazione della policy dopo 500 iterazioni
     # seguendo l'idea di truncated policy
-    for i in range(0, 100):
+    for i in range(0, 500):
         delta = 0
         for s in range(len(enviroment_class.number_states(env))):
             Vs = 0
