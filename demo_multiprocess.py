@@ -5,104 +5,134 @@ import operator
 from IPython.display import clear_output
 from time import sleep
 import itertools
-from argparse import ArgumentParser as parser
 from multiprocessing import Pool
 import os
 
-import agents.monte_carlo_agent as MCA
 
-'''
-Ogni agente viene allenato per n_games partite oguna di n_episodes episodi
-'''
-def run_agent(epsilon, n_games, n_episodes):
-    dict_result = MCA.run_agent(
-        enviroment,
-        n_games,
-        n_episodes,
-        epsilon = epsilon
+import agents.monte_carlo_agent as MCA
+import agents.dynamic_programming_agent as DPA
+
+
+def input_for_agent(n_agent):
+
+    print()
+    print("*************************************************")
+    print("*                    AGENT " + str(n_agent+1) + "                    *")
+    print("*************************************************")
+
+    agent_type = input("Insert the agent type: ")
+    agent = {}
+
+
+    if agent_type == "MonteCarlo" or agent_type == "MC":
+        n_games = int(input("Insert the number of games: "))
+        n_episodes = int(input("Insert the number of episodes for each game: "))
+        epsilon = float(input("Insert the parameter epsilon: "))
+
+        agent ={
+            "type": agent_type,
+            "n_games": n_games,
+            "n_episodes": n_episodes,
+            "epsilon": epsilon
+        }
+
+    elif agent_type == "Dynamic programming" or agent_type == "DP":
+        gamma = float(input("Insert the parameter gamma: "))
+        theta = float(input("Insert the parameter theta: "))
+
+        agent ={
+            "type": agent_type,
+            "gamma": gamma,
+            "theta": theta,
+        }
+
+    return agent
+
+
+def create_custom_enviroment():
+
+        gym.register(
+            id='FrozenLakeNotSlippery8x8-v0',
+            entry_point='gym.envs.toy_text:FrozenLakeEnv',
+            kwargs={'map_name' : '8x8', 'is_slippery': False},
+            max_episode_steps=1000,
         )
 
-    tests_result = dict_result["tests_result"]
+        gym.register(
+            id='FrozenLakeNotSlippery4x4-v0',
+            entry_point='gym.envs.toy_text:FrozenLakeEnv',
+            kwargs={'map_name' : '4x4', 'is_slippery': False},
+            max_episode_steps=1000,
+        )
 
-    return tests_result
+
+def create_legend_string(agent):
+
+    string = ""
+
+    if agent["type"] == "MonteCarlo" or agent["type"] == "MC":
+        return "MonteCarlo, epsilon=" + str(agent["epsilon"]) + ", n_games=" + str(agent["n_games"]) + ", n_episodes=" + str(agent["n_episodes"])
+
+    elif agent["type"] == "Dynamic programming" or agent["type"] == "DP":
+        return "Dynamic programming, gamma=" + str(agent["gamma"]) + ", theta=" + str(agent["theta"])
+
+
+def run_agent(agent_dict):
+    if agent_dict["type"] == "MonteCarlo" or agent_dict["type"] == "MC":
+
+        dict_result = MCA.run_agent(
+            enviroment,
+            agent_dict["n_games"],
+            agent_dict["n_episodes"],
+            epsilon = agent_dict["epsilon"]
+        )
+
+    elif agent_dict["type"] == "Dynamic programming" or agent_dict["type"] == "DP":
+
+        dict_result = DPA.run_agent(
+            enviroment,
+            agent_dict["gamma"],
+            agent_dict["theta"],
+        )
+
+    test_result = dict_result["tests_result"]
+
+    return test_result
 
 
 if __name__ == '__main__':
 
-    parser = parser(prog='Demo', description='demo for agent')
-    parser.add_argument('-n_g', '--n_games', metavar='n_games', type=int, nargs=1, help='Number of games')
-    parser.add_argument('-n_e', '--n_episodes', metavar='n_episodes', type=int, nargs=1, help='Number of episodes for each game')
-    parser.add_argument('-e_l', '--epsilons_list', metavar='epsilons_list', type=float, nargs="*", default=[0.01], help='Epsilons value for agents (one for each agent)')
-    parser.add_argument('-e', '--enviroment_name', metavar='enviroment_name', type=str, nargs=1, required=True, help='Enviroment name')
-    parser.add_argument('-y', '--y_label_name', metavar='y_label_name', type=str, nargs=1, help='Label y name')
-
-    args = parser.parse_args()
-
-    if not args.n_games:
-        n_games = 100
-    else:
-        n_games = args.n_games[0]
-
-    if not args.n_episodes:
-        n_episodes = 100
-    else:
-        n_episodes = args.n_episodes[0]
+    agents_list = []
+    tests_result = []
+    create_custom_enviroment()
 
 
-    epsilons = args.epsilons_list
+    enviroment_name = input("Insert the enviroment name: ")
+    n_agents = int(input("Insert the number of agents: "))
 
-    gym.register(
-        id='FrozenLakeNotSlippery8x8-v0',
-        entry_point='gym.envs.toy_text:FrozenLakeEnv',
-        kwargs={'map_name' : '8x8', 'is_slippery': False},
-        max_episode_steps=1000,
-    )
+    for i in range(n_agents):
+        agents_list.append(input_for_agent(i))
 
-    gym.register(
-        id='FrozenLakeNotSlippery4x4-v0',
-        entry_point='gym.envs.toy_text:FrozenLakeEnv',
-        kwargs={'map_name' : '4x4', 'is_slippery': False},
-        max_episode_steps=1000,
-    )
 
-    enviroment = gym.make(args.enviroment_name[0]) #Creazione ambiente
+    enviroment = gym.make(enviroment_name) #Creazione ambiente
 
-    '''
-    Per ogni epsilon specificata nella lista epsilons viene creato un agente diverso
-    ognuno con il rispettivo valore del parametro epsilon.
-    Ogni agente è inizializzato con una policy random, una state_action_table vuota
-    e un dizionario di returns vuoto.
-    Ogni agente viene associato ad un processo diverso, il numero di processi è limitato
-    al numero di core utilizzabili da python
-    '''
-    #creo una lista con i parametri degli agenti
-    params = zip(
-        epsilons,
-        [n_games] * len(epsilons),
-        [n_episodes] * len(epsilons),
-    )
 
     pool = Pool(len(os.sched_getaffinity(0))) #creo un pool di processi
-    results = pool.starmap(run_agent, params) #Ogni agente viene affidato ad un processo
+    results = pool.starmap(run_agent, zip(agents_list)) #Ogni agente viene affidato ad un processo
 
     pool.close()
     pool.join() # attendo che tutti gli agenti abbiano terminato il trining per poi prseguire
 
+
     #per ogni agente recupero il risultato dei test
-    for agent in range(len(epsilons)):
+    for agent in range(len(agents_list)):
         #Aggiunta della lista dei risultati al grafico
         plt.plot(results[agent])
 
-    #creo la legenda del grafico, un elemento per ogni agente
+
     legend = []
-    for i in range(len(epsilons)):
-        legend.append("epsilon = " + str(epsilons[i]))
+    for agent in agents_list:
+        legend.append(create_legend_string(agent))
 
-    if not args.y_label_name:
-        plt.ylabel('% wins')
-    else:
-        plt.ylabel(args.y_label_name[0])
-
-    plt.xlabel('Number of games (each of ' + str(n_episodes) + " episodes)" )
     plt.legend(legend, loc='upper left')
     plt.show()
