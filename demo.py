@@ -9,6 +9,7 @@ from argparse import ArgumentParser as parser
 
 import agents.monte_carlo_agent as MCA
 import agents.dynamic_programming_agent as DPA
+import agents.q_learning as QLA
 
 
 def input_for_agent(n_agent):
@@ -44,6 +45,22 @@ def input_for_agent(n_agent):
             "theta": theta,
         }
 
+    elif agent_type == "Q learning" or agent_type == "QL":
+        alpha = float(input("Insert the parameter alpha (learning rate): "))
+        gamma = float(input("Insert the parameter gamma: "))
+        epsilon = float(input("Insert the parameter epsilon: "))
+        n_games = int(input("Insert the number of games: "))
+        n_episodes = int(input("Insert the number of episodes for each game: "))
+
+        agent ={
+            "type": agent_type,
+            "alpha": alpha,
+            "gamma": gamma,
+            "epsilon": epsilon,
+            "n_games": n_games,
+            "n_episodes": n_episodes,
+        }
+
     return agent
 
 
@@ -74,6 +91,8 @@ def create_legend_string(agent):
     elif agent["type"] == "Dynamic programming" or agent["type"] == "DP":
         return "Dynamic programming, gamma=" + str(agent["gamma"]) + ", theta=" + str(agent["theta"])
 
+    elif agent["type"] == "Q learning" or agent["type"] == "QL":
+        return "Q learning, alpha=" + str(agent["alpha"]) + ", gamma=" + str(agent["gamma"]) + ", epsilon=" + str(agent["epsilon"]) + ", n_games=" + str(agent["n_games"]) + ", n_episodes=" + str(agent["n_episodes"])
 
 
 
@@ -81,7 +100,6 @@ if __name__ == '__main__':
 
     agents_list = []
     create_custom_enviroment()
-
 
     enviroment_name = input("Insert the enviroment name: ")
     n_agents = int(input("Insert the number of agents: "))
@@ -91,7 +109,6 @@ if __name__ == '__main__':
 
 
     enviroment = gym.make(enviroment_name) #Creazione ambiente
-
 
     for agent in agents_list:
 
@@ -108,9 +125,21 @@ if __name__ == '__main__':
 
             dict_result = DPA.run_agent(
                 enviroment,
-                agent["gamma"],
-                agent["theta"],
+                gamma = agent_dict["gamma"],
+                theta = agent_dict["theta"],
             )
+
+        elif agent["type"] == "Q learning" or agent["type"] == "QL":
+
+            dict_result = QLA.run_agent(
+                enviroment,
+                alpha = agent_dict["alpha"],
+                gamma = agent_dict["gamma"],
+                epsilon = agent_dict["epsilon"],
+                n_games = agent_dict["n_games"],
+                n_episodes = agent_dict["n_episodes"]
+            )
+            
         plt.plot(dict_result["tests_result"])
 
 

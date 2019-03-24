@@ -11,7 +11,7 @@ def run_agent(env, gamma=1, theta=1e-8, max_iteration=1e6):
 
     global enviroment_class
     enviroment_class = enviroment_choose.env_choose(env)
-    tmp = policy_iteration(env, gamma, theta, max_iteration)
+    tmp = policy_iteration(env, gamma=gamma, theta=theta)
     agent_info = {
         "policy": tmp[0],
         "state_action_table": tmp[1]
@@ -32,15 +32,15 @@ def run_agent(env, gamma=1, theta=1e-8, max_iteration=1e6):
 def policy_iteration(env, gamma=1, theta=1e-8, max_iteration=1e6):
     policy = np.ones([len(enviroment_class.number_states(env)), enviroment_class.number_actions(env)]) / enviroment_class.number_actions(env)
     for _ in tqdm(range(int(max_iteration))):
-        V = policy_evaluation(env, policy, gamma, theta)
-        new_policy = policy_improvement(env, V)
+        V = policy_evaluation(env, policy, gamma=gamma, theta=theta)
+        new_policy = policy_improvement(env, V, gamma=gamma)
 
         # OPTION 1: stop if the policy is unchanged after an improvement step
         #if (new_policy == policy).all():
         #    break;
 
         # OPTION 2: stop if the value function estimates for successive policies has converged
-        if np.max(abs(policy_evaluation(env, policy) - policy_evaluation(env, new_policy))) < theta*1e2:
+        if np.max(abs(policy_evaluation(env, policy, gamma=gamma, theta=theta) - policy_evaluation(env, new_policy, gamma=gamma, theta=theta))) < theta*1e2:
             break;
 
         policy = copy.copy(new_policy)
@@ -57,7 +57,7 @@ def policy_evaluation(env, policy, gamma=1, theta=1e-8):
         for s in range(len(enviroment_class.number_states(env))):
             Vs = 0
             for a, action_prob in enumerate(policy[s]):
-                for prob, next_state, reward, done in enviroment_class.probability(env)[s][a]: #####################################
+                for prob, next_state, reward, done in enviroment_class.probability(env)[s][a]:
                     Vs += action_prob * prob * (reward + gamma * V[next_state])
             delta = max(delta, np.abs(V[s]-Vs))
             V[s] = Vs
@@ -80,7 +80,7 @@ def policy_improvement(env, V, gamma=1):
 def q_from_v(env, V, s, gamma=1):
     q = np.zeros(enviroment_class.number_actions(env))
     for a in range(enviroment_class.number_actions(env)):
-        for prob, next_state, reward, done in enviroment_class.probability(env)[s][a]: ##############################################à
+        for prob, next_state, reward, done in enviroment_class.probability(env)[s][a]:
             q[a] += prob * (reward + gamma * V[next_state])
     return q
 
