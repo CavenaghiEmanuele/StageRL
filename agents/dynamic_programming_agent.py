@@ -36,20 +36,23 @@ def policy_iteration(env, gamma=1, theta=1e-8, max_iteration=1e6):
         new_policy = policy_improvement(env, V)
 
         # OPTION 1: stop if the policy is unchanged after an improvement step
-        if (new_policy == policy).all():
-            break;
-
-        # OPTION 2: stop if the value function estimates for successive policies has converged
-        # if np.max(abs(policy_evaluation(env, policy) - policy_evaluation(env, new_policy))) < theta*1e2:
+        #if (new_policy == policy).all():
         #    break;
 
+        # OPTION 2: stop if the value function estimates for successive policies has converged
+        if np.max(abs(policy_evaluation(env, policy) - policy_evaluation(env, new_policy))) < theta*1e2:
+            break;
+
         policy = copy.copy(new_policy)
+
     return policy, V
 
 
 def policy_evaluation(env, policy, gamma=1, theta=1e-8):
     V = np.zeros(len(enviroment_class.number_states(env)))
-    while True:
+    # Tronchiamo la valutazione della policy dopo 1000 iterazioni
+    # seguendo l'idea di truncated policy
+    for i in range(0, 100):
         delta = 0
         for s in range(len(enviroment_class.number_states(env))):
             Vs = 0

@@ -27,35 +27,6 @@ def run_game(env, policy):
      return episode
 
 
-def run_game_for_test(env, policy):
-    env.reset()
-    episode = []
-    finished = False
-
-    state = env.action_space.sample()
-
-    while not finished:
-
-        timestep = []
-        timestep.append(state)
-
-        action_max = [0, -1]
-        for prob in policy[state].items():
-
-            if prob[1] > action_max[1]:
-                action_max = prob
-
-        action = action_max[0]
-
-        state, reward, finished, info = env.step(action)
-        timestep.append(action)
-        timestep.append(reward)
-
-        episode.append(timestep)
-
-    return episode
-
-
 def test_policy(policy, env, type_test="average"):
 
     if type_test == "average":
@@ -63,7 +34,7 @@ def test_policy(policy, env, type_test="average"):
             reward = 0
             r = 1000
             for i in range(r):
-                episode = run_game_for_test(env, policy)
+                episode = run_game(env, policy)
                 for step in range(len(episode)):
                     reward += episode[step][2]
 
