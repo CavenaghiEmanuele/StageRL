@@ -1,55 +1,32 @@
 import random
 
 
-def run_game(env, policy):
-     env.reset()
-     episode = []
-     finished = False
+def run_game(env, action):
 
-     while not finished:
-          state = env.env.s
-
-          timestep = []
-          timestep.append(state)
-          n = random.uniform(0, sum(policy[state].values()))
-          top_range = 0
-          for prob in policy[state].items():
-             top_range += prob[1]
-             if n < top_range:
-                   action = prob[0]
-                   break
-          state, reward, finished, info = env.step(action)
-          timestep.append(action)
-          timestep.append(reward)
-
-          episode.append(timestep)
-
-     return episode
+    return env.step(action)
 
 
-def test_policy(policy, env, type_test="average"):
+def test_policy(env, action):
 
-    if type_test == "average":
+    next_state, reward, done, info = env.step(action)
 
-            reward = 0
-            r = 100
-            for i in range(r):
-                episode = run_game(env, policy)
-                for step in range(len(episode)):
-                    reward += episode[step][2]
+    env_info = {
+        "next_state": next_state,
+        "reward": reward,
+        "done": done,
+        "info": info
+        }
 
-            return reward/r
+    if done and reward == 20:
+        return {"env_info": env_info, "average": reward, "%wins": 1}
 
-    elif type_test == "%wins":
 
-        wins = 0
-        r = 1000
-        for i in range(r):
-            w = run_game(env, policy)[-1][-1]
-            if w == 20:
-                wins += 1
+    return {"env_info": env_info, "average": reward, "%wins": 0}
 
-        return wins / r
+
+def type_test():
+
+    return ["average", "%wins"]
 
 
 def number_states(env):

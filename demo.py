@@ -99,16 +99,25 @@ def create_legend_string(agent):
 if __name__ == '__main__':
 
     agents_list = []
+    tests_result = []
     create_custom_enviroment()
 
     enviroment_name = input("Insert the enviroment name: ")
+    enviroment = gym.make(enviroment_name) #Creazione ambiente
+
     n_agents = int(input("Insert the number of agents: "))
 
     for i in range(n_agents):
         agents_list.append(input_for_agent(i))
 
-
-    enviroment = gym.make(enviroment_name) #Creazione ambiente
+    '''
+    agents_list = [
+        {'type': 'QL', 'alpha': 0.1, 'gamma': 0.6, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100},
+        {'type': 'QL', 'alpha': 0.2, 'gamma': 0.6, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100},
+        {'type': 'QL', 'alpha': 0.3, 'gamma': 0.6, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100},
+        {'type': 'QL', 'alpha': 0.01, 'gamma': 0.6, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100}
+        ]
+    '''
 
     for agent in agents_list:
 
@@ -125,27 +134,32 @@ if __name__ == '__main__':
 
             dict_result = DPA.run_agent(
                 enviroment,
-                gamma = agent_dict["gamma"],
-                theta = agent_dict["theta"],
+                gamma = agent["gamma"],
+                theta = agent["theta"],
             )
 
         elif agent["type"] == "Q learning" or agent["type"] == "QL":
 
             dict_result = QLA.run_agent(
                 enviroment,
-                alpha = agent_dict["alpha"],
-                gamma = agent_dict["gamma"],
-                epsilon = agent_dict["epsilon"],
-                n_games = agent_dict["n_games"],
-                n_episodes = agent_dict["n_episodes"]
+                alpha = agent["alpha"],
+                gamma = agent["gamma"],
+                epsilon = agent["epsilon"],
+                n_games = agent["n_games"],
+                n_episodes = agent["n_episodes"]
             )
-            
-        plt.plot(dict_result["tests_result"])
 
+        tests_result.append(dict_result["tests_result"])
 
     legend = []
-    for agent in agents_list:
-        legend.append(create_legend_string(agent))
+    for test in tests_result[0]:
 
-    plt.legend(legend, loc='upper left')
+        plt.figure(test)
+        for agent in range(len(agents_list)):
+            legend.append(create_legend_string(agents_list[agent]))
+            plt.plot(tests_result[agent][test])
+
+        plt.legend(legend, loc='upper left')
+        plt.ylabel(test)
+
     plt.show()

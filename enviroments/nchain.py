@@ -1,70 +1,28 @@
 import random
 
 
-def run_game(env, policy):
-     env.reset()
-     episode = []
-     finished = False
+def run_game(env, action):
 
-     while not finished:
-          state = env.action_space.sample()
-
-          timestep = []
-          timestep.append(state)
-          n = random.uniform(0, sum(policy[state].values()))
-          top_range = 0
-          for prob in policy[state].items():
-             top_range += prob[1]
-             if n < top_range:
-                   action = prob[0]
-                   break
-          state, reward, finished, info = env.step(action)
-          timestep.append(action)
-          timestep.append(reward)
-
-          episode.append(timestep)
-
-     return episode
+    return env.step(action)
 
 
-def run_game_for_test(env, policy):
-    env.reset()
-    episode = []
-    finished = False
+def test_policy(env, action):
 
-    state = env.action_space.sample()
+    next_state, reward, done, info = env.step(action)
 
-    while not finished:
+    env_info = {
+        "next_state": next_state,
+        "reward": reward,
+        "done": done,
+        "info": info
+        }
 
-        timestep = []
-        timestep.append(state)
+    return {"env_info": env_info, "average": reward}
 
-        action_max = [0, -1]
-        for prob in policy[state].items():
 
-            if prob[1] > action_max[1]:
-                action_max = prob
+def type_test():
 
-        action = action_max[0]
-
-        state, reward, finished, info = env.step(action)
-        timestep.append(action)
-        timestep.append(reward)
-
-        episode.append(timestep)
-
-    return episode
-
-def test_policy(policy, env):
-
-    reward = 0
-    r = 100
-    for i in range(r):
-        episode = run_game_for_test(env, policy)
-        for step in range(len(episode)):
-            reward += episode[step][2]
-
-    return reward/r
+    return ["average"]
 
 
 def number_states(env):

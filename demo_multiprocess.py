@@ -128,44 +128,41 @@ def run_agent(agent_dict):
         )
 
     test_result = dict_result["tests_result"]
-
     return test_result
 
 
 if __name__ == '__main__':
 
     agents_list = []
+
     tests_result = []
     create_custom_enviroment()
 
 
     enviroment_name = input("Insert the enviroment name: ")
+    enviroment = gym.make(enviroment_name) #Creazione ambiente
+
     n_agents = int(input("Insert the number of agents: "))
 
     for i in range(n_agents):
         agents_list.append(input_for_agent(i))
 
 
-    enviroment = gym.make(enviroment_name) #Creazione ambiente
-
-
     pool = Pool(len(os.sched_getaffinity(0))) #creo un pool di processi
     results = pool.starmap(run_agent, zip(agents_list)) #Ogni agente viene affidato ad un processo
 
     pool.close()
-    pool.join() # attendo che tutti gli agenti abbiano terminato il trining per poi prseguire
-
-
-    #per ogni agente recupero il risultato dei test
-    for agent in range(len(agents_list)):
-        #Aggiunta della lista dei risultati al grafico
-        plt.plot(results[agent])
+    pool.join() # attendo che tutti gli agenti abbiano terminato il training per poi proseguire
 
 
     legend = []
-    for agent in agents_list:
-        legend.append(create_legend_string(agent))
+    for test in results[0]:
+        plt.figure(test)
+        for agent in range(len(agents_list)):
+            legend.append(create_legend_string(agents_list[agent]))
+            plt.plot(results[agent][test])
 
+        plt.legend(legend, loc='upper left')
+        plt.ylabel(test)
 
-    plt.legend(legend, loc='upper left')
     plt.show()
