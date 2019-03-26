@@ -53,11 +53,22 @@ def monte_carlo_control(env, n_games, n_episodes, epsilon):
             TRAINING
             '''
             while not done:
+
+                n = random.uniform(0, sum(policy[state]))
+                top_range = 0
+                action_name = -1
+                for prob in policy[state]:
+                    action_name += 1
+                    top_range += prob
+                    if n < top_range:
+                        action = action_name
+                        break
+                '''
                 if random.uniform(0, 1) < epsilon:
                     action = env.action_space.sample() # Explore action space
                 else:
                     action = np.argmax(policy[state]) # Exploit learned values
-
+                '''
                 next_state, reward, done, info = enviroment_class.run_game(env, action)
                 episode.append([state, action, reward])
                 state = next_state
@@ -114,6 +125,6 @@ def monte_carlo_control(env, n_games, n_episodes, epsilon):
             test_iteration_i[type_test] = test_iteration_i[type_test] / n_test
 
         tests_result.append(test_iteration_i)
-    
+
     agent_info = {"policy": policy, "state_action_table": Q, "returns_number": returns_number}
     return {"agent_info": agent_info, "tests_result": tests_result}
