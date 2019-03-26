@@ -17,29 +17,65 @@ def run_agent(env, gamma=1, theta=1e-8, max_iteration=1e6):
         "state_action_table": tmp[1]
     }
 
-    policy_dict = policy_matrix_to_dict(agent_info["policy"])
 
+    '''
+    TESTING
+    '''
+    #Ottengo dall'ambiente i tipi di test che mi può restituire
+    type_test_list = enviroment_class.type_test()
     tests_result = []
-    for _ in tqdm(range(0, 100)):
+    tmp_tests_result = {}
+    n_test = 100
+    n_episodes_test = 100
 
-        test = enviroment_class.test_policy(policy_dict, env)
-        tests_result.append(test)
+    for type_test in type_test_list:
+        tmp_tests_result.update({type_test: []})
 
-    return {"agent_info": agent_info, "tests_result": tests_result}
+
+    for _ in tqdm(range(n_test)):
+
+        test_iteration_i = {}
+        for type_test in type_test_list:
+            test_iteration_i.update({type_test: 0})
+
+        #Per ogni test eseguiamo 100 "episodi"
+        for _ in range(n_episodes_test):
+
+            done = False
+            state = env.reset()
+
+            while not done:
+                action = np.argmax(agent_info["policy"][state]) # Use the best learned action
+                test_dict = enviroment_class.test_policy(env, action)
+                state = test_dict["env_info"]["next_state"]
+                done = test_dict["env_info"]["done"]
+
+                for type_test in type_test_list:
+                    test_iteration_i[type_test] += test_dict[type_test]
+
+        for type_test in type_test_list:
+            test_iteration_i[type_test] = test_iteration_i[type_test] / n_episodes_test
+
+        tests_result.append(test_iteration_i)
+
+
+    for type_test in tmp_tests_result:
+        for test in tests_result:
+            tmp_tests_result[type_test].append(test[type_test])
+
+
+    return {"agent_info": agent_info, "tests_result": tmp_tests_result}
 
 
 
 def policy_iteration(env, gamma=1, theta=1e-8, max_iteration=1e6):
     policy = np.ones([len(enviroment_class.number_states(env)), enviroment_class.number_actions(env)]) / enviroment_class.number_actions(env)
+
     for _ in tqdm(range(int(max_iteration))):
         V = policy_evaluation(env, policy, gamma=gamma, theta=theta)
         new_policy = policy_improvement(env, V, gamma=gamma)
 
-        # OPTION 1: stop if the policy is unchanged after an improvement step
-        #if (new_policy == policy).all():
-        #    break;
-
-        # OPTION 2: stop if the value function estimates for successive policies has converged
+        # Stop if the value function estimates for successive policies has converged
         if np.max(abs(policy_evaluation(env, policy, gamma=gamma, theta=theta) - policy_evaluation(env, new_policy, gamma=gamma, theta=theta))) < theta*1e2:
             break;
 

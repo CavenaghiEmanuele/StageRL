@@ -1,111 +1,119 @@
+import numpy as np
 import random
 from tqdm import tqdm
 import sys
 sys.path.insert(0, 'enviroments')
-
 import enviroment_choose
+
 
 def run_agent(env, n_games, n_episodes, epsilon=0.01):
 
     global enviroment_class
     enviroment_class = enviroment_choose.env_choose(env)
-    return policy_iteration(env, n_games, n_episodes, epsilon)
+    results = monte_carlo_control(env, n_games, n_episodes, epsilon)
+
+    tests_result = {}
+
+    for type_test in enviroment_class.type_test():
+        tests_result.update({type_test: []})
+
+    for type_test in tests_result:
+        for test in results["tests_result"]:
+            tests_result[type_test].append(test[type_test])
+
+    return {"agent_info": results["agent_info"], "tests_result": tests_result}
 
 
-def policy_iteration(env, n_games, n_episodes, epsilon=0.01):
+
+
+
+def monte_carlo_control(env, n_games, n_episodes, epsilon):
+
+    policy = np.ones([len(enviroment_class.number_states(env)), enviroment_class.number_actions(env)]) / enviroment_class.number_actions(env)
+    Q = np.zeros([len(enviroment_class.number_states(env)), enviroment_class.number_actions(env)])
+    returns_number = {}
+
     tests_result = []
-    policy = create_random_policy(env)
-    random_agent_info = {
-        "policy": policy,
-        "state_action_table": create_state_action_dictionary(env, policy),
-        "returns_number": {}
-    }
-    random_policy_score = enviroment_class.test_policy(policy, env)
-    best_agent_info = (random_agent_info, random_policy_score)
+    #Ottengo dall'ambiente i tipi di test che mi può restituire
+    type_test_list = enviroment_class.type_test()
 
-    for i in tqdm(range(n_games)):
-        new_agent_info =  monte_carlo_control(
-            env,
-            policy=best_agent_info[0]["policy"],
-            state_action_table=best_agent_info[0]["state_action_table"],
-            returns_number=best_agent_info[0]["returns_number"],
-            episodes=n_episodes,
-            epsilon=epsilon
-        )
-        new_policy_score = enviroment_class.test_policy(new_agent_info["policy"], env)
-        tests_result.append(new_policy_score)
-        if new_policy_score > best_agent_info[1]:
-            best_agent_info = (new_agent_info, new_policy_score)
+    for _ in tqdm(range(n_games)):
 
-    dict = {"agent_info": best_agent_info[0], "tests_result": tests_result}
-    return dict
+        for _ in range(n_episodes): # Looping through episodes
 
-def monte_carlo_control(env, episodes=100, policy=None, state_action_table=None, returns_number=None, epsilon=0.01):
-    if not policy:
-        policy = create_random_policy(env)  # Create an empty dictionary to store state action values
+            G = 0 # Store cumulative reward in G (initialized at 0)
+            episode = []
 
-    if not state_action_table:
-        Q = enviroment_class.create_state_action_dictionary(env, policy) # Empty dictionary for storing rewards for each state-action pair
-    else:
-        Q = state_action_table
+            state = env.reset()
+            action = 0
+            reward = 0
+            done = False
 
-    if not returns_number:
-        returns_number = {}
-
-    for _ in range(episodes): # Looping through episodes
-
-        G = 0 # Store cumulative reward in G (initialized at 0)
-        episode = enviroment_class.run_game(env=env, policy=policy) # Store state, action and value respectively
-
-        # for loop through reversed indices of episode array.
-        # The logic behind it being reversed is that the eventual reward would be at the end.
-        # So we have to go back from the last timestep to the first one propagating result from the future.
-
-        for i in reversed(range(0, len(episode))):
-            s_t, a_t, r_t = episode[i]
-            state_action = (s_t, a_t)
-            G += r_t # Increment total reward by reward on current timestep
-
-            if not state_action in [(x[0], x[1]) for x in episode[0:i]]: #because is first visit algorithm
-
-                if returns_number.get(state_action):
-                    returns_number[state_action] += 1
-                    Q[s_t][a_t] = Q[s_t][a_t] + ((1 / returns_number[state_action]) * (G - Q[s_t][a_t]))
+            '''
+            TRAINING
+            '''
+            while not done:
+                if random.uniform(0, 1) < epsilon:
+                    action = env.action_space.sample() # Explore action space
                 else:
-                    returns_number[state_action] = 1
-                    Q[s_t][a_t] = G
+                    action = np.argmax(policy[state]) # Exploit learned values
 
-                Q_list = list(map(lambda x: x[1], Q[s_t].items())) # Finding the action with maximum value
-                indices = [i for i, x in enumerate(Q_list) if x == max(Q_list)]
-                max_Q = random.choice(indices)
+                next_state, reward, done, info = enviroment_class.run_game(env, action)
+                episode.append([state, action, reward])
+                state = next_state
 
-                A_star = max_Q # 14.
 
-                for a in policy[s_t].items(): # Update action probability for s_t in policy
-                    if a[0] == A_star:
-                        policy[s_t][a[0]] = 1 - epsilon + (epsilon / abs(sum(policy[s_t].values())))
+            for i in reversed(range(0, len(episode))):
+                s_t, a_t, r_t = episode[i]
+                state_action = (s_t, a_t)
+                G += r_t # Increment total reward by reward on current timestep
+                if not state_action in [(x[0], x[1]) for x in episode[0:i]]: #because is first visit algorithm
+
+                    if returns_number.get(state_action):
+                        returns_number[state_action] += 1
+                        Q[s_t][a_t] = Q[s_t][a_t] + ((1 / returns_number[state_action]) * (G - Q[s_t][a_t]))
                     else:
-                        policy[s_t][a[0]] = (epsilon / abs(sum(policy[s_t].values())))
+                        returns_number[state_action] = 1
+                        Q[s_t][a_t] = G
 
+                    # Finding the action with maximum value
+                    indices = [i for i, x in enumerate(Q[s_t]) if x == max(Q[s_t])]
+                    max_Q = random.choice(indices)
+
+                    A_star = max_Q
+
+                    for a in range(len(policy[s_t])): # Update action probability for s_t in policy
+                        if a == A_star:
+                            policy[s_t][a] = 1 - epsilon + (epsilon / abs(sum(policy[s_t])))
+                        else:
+                            policy[s_t][a] = (epsilon / abs(sum(policy[s_t])))
+
+        '''
+        TESTING
+        '''
+        n_test = 100
+        test_iteration_i = {}
+        for type_test in type_test_list:
+            test_iteration_i.update({type_test: 0})
+
+        for _ in range(n_test):
+
+            done = False
+            state = env.reset()
+
+            while not done:
+                action = np.argmax(policy[state]) # Use the best learned action
+                test_dict = enviroment_class.test_policy(env, action)
+                state = test_dict["env_info"]["next_state"]
+                done = test_dict["env_info"]["done"]
+
+                for type_test in type_test_list:
+                    test_iteration_i[type_test] += test_dict[type_test]
+
+        for type_test in type_test_list:
+            test_iteration_i[type_test] = test_iteration_i[type_test] / n_test
+
+        tests_result.append(test_iteration_i)
+    
     agent_info = {"policy": policy, "state_action_table": Q, "returns_number": returns_number}
-
-    return agent_info
-
-
-def create_random_policy(env):
-    action_space = enviroment_class.number_actions(env) #Azioni disponibili
-    policy = {}
-    for i in enviroment_class.number_states(env):
-        current_end = 0
-        p = {}
-        for action in range(0, action_space):
-            p[action] = 1 / action_space
-        policy[i] = p
-    return policy
-
-def create_state_action_dictionary(env, policy):
-    action_space = enviroment_class.number_actions(env) #Azioni disponibili
-    Q = {}
-    for key in policy.keys():
-         Q[key] = {a: 0.0 for a in range(0, action_space)}
-    return Q
+    return {"agent_info": agent_info, "tests_result": tests_result}
