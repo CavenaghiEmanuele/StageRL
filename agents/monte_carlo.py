@@ -39,7 +39,7 @@ def monte_carlo_control(env, n_games, n_episodes, epsilon):
 
     for _ in tqdm(range(n_games)):
 
-        for _ in range(n_episodes): # Looping through episodes
+        for _ in range(n_episodes): 
 
             G = 0 # Store cumulative reward in G (initialized at 0)
             episode = []
