@@ -4,19 +4,21 @@ import itertools as it
 def run_game(env, action):
 
     next_state, reward, done, info = env.step(action)
+    #print(next_state)
+    state = next_state[0] + 32*next_state[1] + 32*11*int(next_state[2])
+    #print(state)
 
-    state = next_state[0] + 32*next_state[1] + 11*32*int(next_state[2])
 
-
-    return
+    return [state, reward, done, info]
 
 
 def test_policy(env, action):
 
     next_state, reward, done, info = env.step(action)
+    state = next_state[0] + 32*next_state[1] + 32*11*int(next_state[2])
 
     env_info = {
-        "next_state": next_state,
+        "next_state": state,
         "reward": reward,
         "done": done,
         "info": info
@@ -59,6 +61,12 @@ def number_states(env):
 
 def number_actions(env):
     return env.action_space.n
+
+def reset_env(env):
+
+    state = env.reset()
+    return state[0] + 32*state[1] + 32*11*int(state[2])
+
 
 
 def probability(env):

@@ -51,6 +51,8 @@ def number_actions(env, can_walking_away=True):
 
     return action_space
 
+def reset_env(env):
+    return env.reset()
 
 def probability(env):
     return None

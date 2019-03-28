@@ -28,6 +28,8 @@ def type_test():
 
     return ["average", "%wins"]
 
+def reset_env(env):
+    return env.reset()
 
 def number_states(env):
     return list(range(0, env.observation_space.n))

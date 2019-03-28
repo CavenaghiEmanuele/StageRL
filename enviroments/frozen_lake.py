@@ -37,5 +37,8 @@ def number_states(env):
 def number_actions(env):
     return env.action_space.n
 
+def reset_env(env):
+    return env.reset()
+
 def probability(env):
     return env.env.P
