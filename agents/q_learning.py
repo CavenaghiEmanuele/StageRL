@@ -36,7 +36,7 @@ def q_learning(env, alpha=0.1, gamma=0.6, epsilon=0.1, n_games=100, n_episodes=1
 
         for _ in range(0, n_episodes):
 
-            state = env.reset()
+            state = enviroment_class.reset_env(env)
             action = 0
             reward = 0
             done = False
@@ -67,10 +67,14 @@ def q_learning(env, alpha=0.1, gamma=0.6, epsilon=0.1, n_games=100, n_episodes=1
         for _ in range(n_test):
 
             done = False
-            state = env.reset()
+            state = enviroment_class.reset_env(env)
 
             while not done:
-                action = np.argmax(q_table[state]) # Use the best learned action
+                if random.uniform(0, 1) < epsilon:
+                    action = env.action_space.sample() # Explore action space
+                else:
+                    action = np.argmax(q_table[state]) # Exploit learned values
+                #action = np.argmax(q_table[state]) # Use the best learned action
                 test_dict = enviroment_class.test_policy(env, action)
                 state = test_dict["env_info"]["next_state"]
                 done = test_dict["env_info"]["done"]

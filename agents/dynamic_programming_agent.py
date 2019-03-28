@@ -42,7 +42,7 @@ def run_agent(env, gamma=1, theta=1e-8, max_iteration=1e6):
         for _ in range(n_episodes_test):
 
             done = False
-            state = env.reset()
+            state = enviroment_class.reset_env(env)
 
             while not done:
                 action = np.argmax(agent_info["policy"][state]) # Use the best learned action
