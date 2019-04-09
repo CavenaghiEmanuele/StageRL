@@ -182,6 +182,20 @@ if __name__ == '__main__':
     for i in range(n_agents):
         agents_list.append(input_for_agent(i))
 
+    '''
+    agents_list = [
+        {'type': 'QL', 'alpha': 0.5, 'gamma': 0.6, 'epsilon': 0.01, 'n_games': 100, 'n_episodes': 100},
+        {'type': 'QL', 'alpha': 0.5, 'gamma': 0.6, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100},
+        {'type': 'QL', 'alpha': 0.5, 'gamma': 0.6, 'epsilon': 0.2, 'n_games': 100, 'n_episodes': 100},
+        {'type': 'QL', 'alpha': 0.5, 'gamma': 0.8, 'epsilon': 0.01, 'n_games': 100, 'n_episodes': 100},
+        {'type': 'QL', 'alpha': 0.5, 'gamma': 0.8, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100},
+        {'type': 'QL', 'alpha': 0.5, 'gamma': 0.8, 'epsilon': 0.2, 'n_games': 100, 'n_episodes': 100},
+        {'type': 'QL', 'alpha': 0.5, 'gamma': 1, 'epsilon': 0.01, 'n_games': 100, 'n_episodes': 100},
+        {'type': 'QL', 'alpha': 0.5, 'gamma': 1, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100},
+        {'type': 'QL', 'alpha': 0.5, 'gamma': 1, 'epsilon': 0.2, 'n_games': 100, 'n_episodes': 100}
+
+    ]
+    '''
 
     pool = Pool(len(os.sched_getaffinity(0))) #creo un pool di processi
     results = pool.starmap(run_agent, zip(agents_list)) #Ogni agente viene affidato ad un processo

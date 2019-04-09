@@ -132,14 +132,6 @@ if __name__ == '__main__':
     for i in range(n_agents):
         agents_list.append(input_for_agent(i))
 
-    '''
-    agents_list = [
-        {'type': 'QL', 'alpha': 0.1, 'gamma': 0.6, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100},
-        {'type': 'QL', 'alpha': 0.2, 'gamma': 0.6, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100},
-        {'type': 'QL', 'alpha': 0.3, 'gamma': 0.6, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100},
-        {'type': 'QL', 'alpha': 0.01, 'gamma': 0.6, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100}
-        ]
-    '''
 
     for agent in agents_list:
 

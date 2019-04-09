@@ -76,6 +76,7 @@ def n_step_sarsa(env, n_games, n_episodes, alpha, gamma, epsilon, n_step):
                     next_state, reward, done, _ = enviroment_class.run_game(env, action)
                     states.append(next_state)
                     rewards.append(reward)
+                    next_action = 0
 
                     if done:
                         T = t + 1
@@ -166,7 +167,5 @@ def n_step_sarsa(env, n_games, n_episodes, alpha, gamma, epsilon, n_step):
 
         tests_result.append(test_iteration_i)
 
-    print(policy)
-    print(Q)
     agent_info = {"policy": policy, "state_action_table": Q}
     return {"agent_info": agent_info, "tests_result": tests_result}
