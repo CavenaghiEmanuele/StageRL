@@ -10,7 +10,7 @@ from argparse import ArgumentParser as parser
 import agents.monte_carlo as MCA
 import agents.dynamic_programming as DPA
 import agents.q_learning as QLA
-import agents.n_step_sarsa as NSS
+import agents.n_step_sarsa as NSSA
 
 
 def input_for_agent(n_agent):
@@ -127,6 +127,8 @@ if __name__ == '__main__':
     enviroment_name = input("Insert the enviroment name: ")
     enviroment = gym.make(enviroment_name) #Creazione ambiente
 
+    tests_moment = input("Select the test type (final or on_run): ")
+
     n_agents = int(input("Insert the number of agents: "))
 
     for i in range(n_agents):
@@ -139,6 +141,7 @@ if __name__ == '__main__':
 
             dict_result = MCA.run_agent(
                 enviroment,
+                tests_moment,
                 agent["n_games"],
                 agent["n_episodes"],
                 epsilon = agent["epsilon"]
@@ -148,6 +151,7 @@ if __name__ == '__main__':
 
             dict_result = DPA.run_agent(
                 enviroment,
+                tests_moment,
                 gamma = agent["gamma"],
                 theta = agent["theta"],
             )
@@ -156,19 +160,21 @@ if __name__ == '__main__':
 
             dict_result = QLA.run_agent(
                 enviroment,
+                tests_moment,
+                agent["n_games"],
+                agent["n_episodes"],
                 alpha = agent["alpha"],
                 gamma = agent["gamma"],
-                epsilon = agent["epsilon"],
-                n_games = agent["n_games"],
-                n_episodes = agent["n_episodes"]
+                epsilon = agent["epsilon"]
             )
 
         elif agent["type"] == "n-step SARSA" or agent["type"] == "NSS":
 
             dict_result = NSSA.run_agent(
                 enviroment,
-                n_games = agent["n_games"],
-                n_episodes = agent["n_episodes"],
+                tests_moment,
+                agent["n_games"],
+                agent["n_episodes"],
                 alpha = agent["alpha"],
                 gamma = agent["gamma"],
                 epsilon = agent["epsilon"],

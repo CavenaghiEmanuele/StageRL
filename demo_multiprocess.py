@@ -126,6 +126,7 @@ def run_agent(agent_dict):
 
         dict_result = MCA.run_agent(
             enviroment,
+            tests_moment,
             agent_dict["n_games"],
             agent_dict["n_episodes"],
             epsilon = agent_dict["epsilon"]
@@ -135,27 +136,31 @@ def run_agent(agent_dict):
 
         dict_result = DPA.run_agent(
             enviroment,
+            tests_moment,
             gamma = agent_dict["gamma"],
-            theta = agent_dict["theta"],
+            theta = agent_dict["theta"]
         )
 
     elif agent_dict["type"] == "Q learning" or agent_dict["type"] == "QL":
 
         dict_result = QLA.run_agent(
             enviroment,
+            tests_moment,
+            agent_dict["n_games"],
+            agent_dict["n_episodes"],
             alpha = agent_dict["alpha"],
             gamma = agent_dict["gamma"],
-            epsilon = agent_dict["epsilon"],
-            n_games = agent_dict["n_games"],
-            n_episodes = agent_dict["n_episodes"]
+            epsilon = agent_dict["epsilon"]
+
         )
 
     elif agent_dict["type"] == "n-step SARSA" or agent_dict["type"] == "NSS":
 
         dict_result = NSSA.run_agent(
             enviroment,
-            n_games = agent_dict["n_games"],
-            n_episodes = agent_dict["n_episodes"],
+            tests_moment,
+            agent_dict["n_games"],
+            agent_dict["n_episodes"],
             alpha = agent_dict["alpha"],
             gamma = agent_dict["gamma"],
             epsilon = agent_dict["epsilon"],
@@ -177,25 +182,16 @@ if __name__ == '__main__':
     enviroment_name = input("Insert the enviroment name: ")
     enviroment = gym.make(enviroment_name) #Creazione ambiente
 
+    tests_moment = input("Select the test type (final, on_run, ten_perc): ")
+
     n_agents = int(input("Insert the number of agents: "))
+
+
 
     for i in range(n_agents):
         agents_list.append(input_for_agent(i))
 
-    '''
-    agents_list = [
-        {'type': 'QL', 'alpha': 0.5, 'gamma': 0.6, 'epsilon': 0.01, 'n_games': 100, 'n_episodes': 100},
-        {'type': 'QL', 'alpha': 0.5, 'gamma': 0.6, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100},
-        {'type': 'QL', 'alpha': 0.5, 'gamma': 0.6, 'epsilon': 0.2, 'n_games': 100, 'n_episodes': 100},
-        {'type': 'QL', 'alpha': 0.5, 'gamma': 0.8, 'epsilon': 0.01, 'n_games': 100, 'n_episodes': 100},
-        {'type': 'QL', 'alpha': 0.5, 'gamma': 0.8, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100},
-        {'type': 'QL', 'alpha': 0.5, 'gamma': 0.8, 'epsilon': 0.2, 'n_games': 100, 'n_episodes': 100},
-        {'type': 'QL', 'alpha': 0.5, 'gamma': 1, 'epsilon': 0.01, 'n_games': 100, 'n_episodes': 100},
-        {'type': 'QL', 'alpha': 0.5, 'gamma': 1, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100},
-        {'type': 'QL', 'alpha': 0.5, 'gamma': 1, 'epsilon': 0.2, 'n_games': 100, 'n_episodes': 100}
 
-    ]
-    '''
 
     pool = Pool(len(os.sched_getaffinity(0))) #creo un pool di processi
     results = pool.starmap(run_agent, zip(agents_list)) #Ogni agente viene affidato ad un processo

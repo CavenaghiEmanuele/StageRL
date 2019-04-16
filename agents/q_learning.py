@@ -6,86 +6,125 @@ import sys
 sys.path.insert(0, 'enviroments')
 
 
-def run_agent(env, alpha=0.1, gamma=0.6, epsilon=0.1, n_games=100, n_episodes=100):
+def run_agent(env, tests_moment, n_games, n_episodes, alpha=0.1, gamma=0.6, epsilon=0.1):
 
-    global enviroment_class
-    enviroment_class = enviroment_choose.env_choose(env)
-    results = q_learning(env, alpha, gamma, epsilon, n_games, n_episodes)
-    tests_result = {}
+    global _enviroment_class
+    global _env
+    global _n_games
+    global _n_episodes
+    global _alpha
+    global _gamma
+    global _epsilon
+    global _tests_moment
 
-    for type_test in enviroment_class.type_test():
-        tests_result.update({type_test: []})
 
-    for type_test in tests_result:
+    _enviroment_class = enviroment_choose.env_choose(env)
+    _env = env
+    _n_games = n_games
+    _n_episodes = n_episodes
+    _alpha = alpha
+    _gamma = gamma
+    _epsilon = epsilon
+    _tests_moment = tests_moment
+
+    results = q_learning()
+
+    tests_result_dict = {}
+
+    for type_test in _type_test_list:
+        tests_result_dict.update({type_test: []})
+
+    for type_test in tests_result_dict:
         for test in results["tests_result"]:
-            tests_result[type_test].append(test[type_test])
+            tests_result_dict[type_test].append(test[type_test])
 
-    return {"agent_info": results["agent_info"], "tests_result": tests_result}
+    return {"agent_info": results["agent_info"], "tests_result": tests_result_dict}
 
+def q_learning():
 
+    global _q_table
+    global _tests_result
+    global _type_test_list
 
-def q_learning(env, alpha=0.1, gamma=0.6, epsilon=0.1, n_games=100, n_episodes=100):
-
-    q_table = np.zeros([len(enviroment_class.number_states(env)), enviroment_class.number_actions(env)])
-    tests_result = []
-
-    #Ottengo dall'ambiente i tipi di test che mi può restituire
-    type_test_list = enviroment_class.type_test()
-
-    for _ in tqdm(range(0, n_games)):
-
-        for _ in range(0, n_episodes):
-
-            state = enviroment_class.reset_env(env)
-            action = 0
-            reward = 0
-            done = False
-
-            '''
-            TRAINING
-            '''
-            while not done:
-                if random.uniform(0, 1) < epsilon:
-                    action = env.action_space.sample() # Explore action space
-                else:
-                    action = np.argmax(q_table[state]) # Exploit learned values
-
-                next_state, reward, done, info = enviroment_class.run_game(env, action)
-
-                q_table[state, action] += alpha * (reward + gamma * np.max(q_table[next_state]) - q_table[state, action])
-                state = next_state
+    _q_table = np.zeros([len(_enviroment_class.number_states(_env)), _enviroment_class.number_actions(_env)])
 
 
-        '''
-        TESTING
-        '''
-        n_test = 100
-        test_iteration_i = {}
-        for type_test in type_test_list:
-            test_iteration_i.update({type_test: 0})
+    _tests_result = []
+    _type_test_list = _enviroment_class.type_test() #Ottengo dall'ambiente i tipi di test che mi può restituire
 
-        for _ in range(n_test):
 
-            done = False
-            state = enviroment_class.reset_env(env)
+    '''
+    TRAINING
+    '''
+    for i_game in tqdm(range(_n_games)):
+        for _ in range(_n_episodes):
+            training()
 
-            while not done:
-                if random.uniform(0, 1) < epsilon:
-                    action = env.action_space.sample() # Explore action space
-                else:
-                    action = np.argmax(q_table[state]) # Exploit learned values
-                #action = np.argmax(q_table[state]) # Use the best learned action
-                test_dict = enviroment_class.test_policy(env, action)
-                state = test_dict["env_info"]["next_state"]
-                done = test_dict["env_info"]["done"]
+        if (i_game % 10) == 0 and _tests_moment == "ten_perc":
+            testing()
 
-                for type_test in type_test_list:
-                    test_iteration_i[type_test] += test_dict[type_test]
+        if _tests_moment == "on_run":
+            testing()
 
-        for type_test in type_test_list:
-            test_iteration_i[type_test] = test_iteration_i[type_test] / n_test
 
-        tests_result.append(test_iteration_i)
+    '''
+    TESTING if type_test is final
+    '''
+    if _tests_moment == "final":
+        for _ in range(100):
+            testing()
 
-    agent_info = {"q_table": q_table}
-    return {"agent_info": agent_info, "tests_result": tests_result}
+
+
+    agent_info = {"q_table": _q_table}
+    return {"agent_info": agent_info, "tests_result": _tests_result}
+
+def training():
+
+    state = _enviroment_class.reset_env(_env)
+    action = 0
+    reward = 0
+    done = False
+
+    while not done:
+
+        if random.uniform(0, 1) < _epsilon:
+            action = _env.action_space.sample() # Explore action space
+        else:
+            action = np.argmax(_q_table[state]) # Exploit learned values
+
+        next_state, reward, done, info = _enviroment_class.run_game(_env, action)
+
+        _q_table[state, action] += _alpha * (reward + _gamma * np.max(_q_table[next_state]) - _q_table[state, action])
+        state = next_state
+
+def testing():
+
+    n_test = 100
+    test_iteration_i = {}
+    for type_test in _type_test_list:
+        test_iteration_i.update({type_test: 0})
+
+    for _ in range(n_test):
+
+        done = False
+        state = _enviroment_class.reset_env(_env)
+
+        while not done:
+
+            if random.uniform(0, 1) < _epsilon:
+                action = _env.action_space.sample() # Explore action space
+            else:
+                action = np.argmax(_q_table[state]) # Exploit learned values
+
+            test_dict = _enviroment_class.test_policy(_env, action)
+            state = test_dict["env_info"]["next_state"]
+            done = test_dict["env_info"]["done"]
+
+            for type_test in _type_test_list:
+                test_iteration_i[type_test] += test_dict[type_test]
+
+    for type_test in _type_test_list:
+        test_iteration_i[type_test] = test_iteration_i[type_test] / n_test
+
+    _tests_result.append(test_iteration_i)

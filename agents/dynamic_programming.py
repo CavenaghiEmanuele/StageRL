@@ -7,7 +7,7 @@ import sys
 sys.path.insert(0, 'enviroments')
 
 
-def run_agent(env, gamma=1, theta=1e-8, max_iteration=1e6):
+def run_agent(env, tests_moment, gamma=1, theta=1e-8):
 
     global enviroment_class
     enviroment_class = enviroment_choose.env_choose(env)
@@ -67,7 +67,6 @@ def run_agent(env, gamma=1, theta=1e-8, max_iteration=1e6):
     return {"agent_info": agent_info, "tests_result": tmp_tests_result}
 
 
-
 def policy_iteration(env, gamma=1, theta=1e-8, max_iteration=1e6):
     policy = np.ones([len(enviroment_class.number_states(env)), enviroment_class.number_actions(env)]) / enviroment_class.number_actions(env)
 
@@ -82,7 +81,6 @@ def policy_iteration(env, gamma=1, theta=1e-8, max_iteration=1e6):
         policy = copy.copy(new_policy)
 
     return policy, V
-
 
 def policy_evaluation(env, policy, gamma=1, theta=1e-8):
     V = np.zeros(len(enviroment_class.number_states(env)))
@@ -101,7 +99,6 @@ def policy_evaluation(env, policy, gamma=1, theta=1e-8):
             break
     return V
 
-
 def policy_improvement(env, V, gamma=1):
     policy = np.zeros([len(enviroment_class.number_states(env)), enviroment_class.number_actions(env)]) / enviroment_class.number_actions(env)
     for s in range(len(enviroment_class.number_states(env))):
@@ -112,14 +109,12 @@ def policy_improvement(env, V, gamma=1):
 
     return policy
 
-
 def q_from_v(env, V, s, gamma=1):
     q = np.zeros(enviroment_class.number_actions(env))
     for a in range(enviroment_class.number_actions(env)):
         for prob, next_state, reward, done in enviroment_class.probability(env)[s][a]:
             q[a] += prob * (reward + gamma * V[next_state])
     return q
-
 
 def policy_matrix_to_dict(policy):
 
