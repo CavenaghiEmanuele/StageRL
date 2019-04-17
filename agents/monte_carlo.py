@@ -6,13 +6,14 @@ sys.path.insert(0, 'enviroments')
 import enviroment_choose
 
 
-def run_agent(env, tests_moment, n_games, n_episodes, epsilon=0.01):
+def run_agent(env, tests_moment, n_games, n_episodes, epsilon=0.01, gamma=1):
 
     global _enviroment_class
     global _env
     global _n_games
     global _n_episodes
     global _epsilon
+    global _gamma
     global _tests_moment
 
     _enviroment_class = enviroment_choose.env_choose(env)
@@ -20,6 +21,7 @@ def run_agent(env, tests_moment, n_games, n_episodes, epsilon=0.01):
     _n_games = n_games
     _n_episodes = n_episodes
     _epsilon = epsilon
+    _gamma = gamma
     _tests_moment = tests_moment
 
     results = monte_carlo_control()
@@ -36,6 +38,7 @@ def run_agent(env, tests_moment, n_games, n_episodes, epsilon=0.01):
 
 
     return {"agent_info": results["agent_info"], "tests_result": tests_result_dict}
+
 
 def monte_carlo_control():
 
@@ -68,7 +71,6 @@ def monte_carlo_control():
             testing()
 
 
-
     '''
     TESTING if type_test is final
     '''
@@ -78,9 +80,9 @@ def monte_carlo_control():
 
             testing()
 
-
     agent_info = {"policy": _policy, "state_action_table": _Q, "returns_number": _returns_number}
     return {"agent_info": agent_info, "tests_result": _tests_result}
+
 
 def training():
 
@@ -113,12 +115,13 @@ def training():
     for i in reversed(range(0, len(episode))):
         s_t, a_t, r_t = episode[i]
         state_action = (s_t, a_t)
-        G += r_t # Increment total reward by reward on current timestep
+        G = (_gamma * G) + r_t # Increment total reward by reward on current timestep
+
         if not state_action in [(x[0], x[1]) for x in episode[0:i]]: #because is first visit algorithm
 
             if _returns_number.get(state_action):
                 _returns_number[state_action] += 1
-                _Q[s_t][a_t] = _Q[s_t][a_t] + ((1 / _returns_number[state_action]) * (G - _Q[s_t][a_t]))
+                _Q[s_t][a_t] = _Q[s_t][a_t] + ((1 / _returns_number[state_action]) * (G - _Q[s_t][a_t])) #Incremental implementation
             else:
                 _returns_number[state_action] = 1
                 _Q[s_t][a_t] = G
@@ -134,6 +137,7 @@ def training():
                     _policy[s_t][a] = 1 - _epsilon + (_epsilon / abs(sum(_policy[s_t])))
                 else:
                     _policy[s_t][a] = (_epsilon / abs(sum(_policy[s_t])))
+
 
 def testing():
 

@@ -28,12 +28,15 @@ def input_for_agent(n_agent):
         n_games = int(input("Insert the number of games: "))
         n_episodes = int(input("Insert the number of episodes for each game: "))
         epsilon = float(input("Insert the parameter epsilon: "))
+        gamma = float(input("Insert the parameter gamma: "))
+
 
         agent ={
             "type": agent_type,
             "n_games": n_games,
             "n_episodes": n_episodes,
-            "epsilon": epsilon
+            "epsilon": epsilon,
+            "gamma": gamma
         }
 
     elif agent_type == "Dynamic programming" or agent_type == "DP":
@@ -105,7 +108,7 @@ def create_legend_string(agent):
     string = ""
 
     if agent["type"] == "MonteCarlo" or agent["type"] == "MC":
-        return "MonteCarlo, epsilon=" + str(agent["epsilon"]) + ", n_games=" + str(agent["n_games"]) + ", n_episodes=" + str(agent["n_episodes"])
+        return "MonteCarlo, epsilon=" + str(agent["epsilon"]) + ", gamma=" + str(agent["gamma"]) + ", n_games=" + str(agent["n_games"]) + ", n_episodes=" + str(agent["n_episodes"])
 
     elif agent["type"] == "Dynamic programming" or agent["type"] == "DP":
         return "Dynamic programming, gamma=" + str(agent["gamma"]) + ", theta=" + str(agent["theta"])
@@ -144,7 +147,8 @@ if __name__ == '__main__':
                 tests_moment,
                 agent["n_games"],
                 agent["n_episodes"],
-                epsilon = agent["epsilon"]
+                epsilon = agent["epsilon"],
+                gamma = agent["gamma"]
             )
 
         elif agent["type"] == "Dynamic programming" or agent["type"] == "DP":
