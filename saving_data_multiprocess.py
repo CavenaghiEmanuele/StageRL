@@ -1,6 +1,5 @@
 import gym
 import numpy as np
-import matplotlib.pyplot as plt
 import operator
 from IPython.display import clear_output
 from time import sleep
@@ -8,6 +7,7 @@ import itertools
 from multiprocessing import Pool
 import os
 import errno
+import json
 
 
 import agents.monte_carlo as MCA
@@ -90,7 +90,6 @@ def input_for_agent(n_agent, tests_moment):
     if (agent_type == "Dynamic programming" or agent_type == "DP") and tests_moment != "final":
         print("Dynamic Programming agent can't have on_run or ten_perc test")
         raise
-
 
     return agent
 
@@ -196,21 +195,41 @@ if __name__ == '__main__':
     n_agents = int(input("Insert the number of agents: "))
 
     '''
-    enviroment_name = "Taxi-v2"
-    enviroment = gym.make(enviroment_name)
-    tests_moment = "ten_perc"
-    n_agents = 1
-    '''
-
-
     for i in range(n_agents):
         agents_list.append(input_for_agent(i, tests_moment))
+
+    '''
+
+    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+
+    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+
+
+
+
 
 
     '''
     Launch agent
     '''
-
     pool = Pool(len(os.sched_getaffinity(0))) #creo un pool di processi
     results = pool.starmap(run_agent, zip(agents_list)) #Ogni agente viene affidato ad un processo
 
@@ -227,8 +246,10 @@ if __name__ == '__main__':
 
     for agent in range(len(agents_list)):
 
-        complete_path = base_path + "/" + agents_list[agent]["type"] + "/" + create_agent_params_string(agents_list[agent])
+        complete_path = base_path + "/" + agents_list[agent]["type"] + "/"
+        file = complete_path + create_agent_params_string(agents_list[agent])
 
+        #Creo la cartella se non esiste
         if not os.path.exists(os.path.dirname(complete_path)):
             try:
                 os.makedirs(os.path.dirname(complete_path))
@@ -236,10 +257,20 @@ if __name__ == '__main__':
                 if exc.errno != errno.EEXIST:
                     raise
 
+        #Se non esiste ancora creo il file nuovo con una lista vuota
+        if not os.path.isfile(file):
 
-        out_file = open(complete_path ,"a")
+            tmp = []
 
-        out_file.write(str(results[agent]))
-        out_file.write("$\n")
+            with open(file, 'w') as outfile:
+                json.dump(tmp, outfile, indent=4)
 
-        out_file.close()
+
+        #Appendo alla lista presente i nuovi risultati dei test
+        with open(file, "r") as inputfile:
+            content = json.load(inputfile)
+
+        content.append(results[agent])
+
+        with open(file, 'w') as outfile:
+            json.dump(content, outfile, indent=4)
