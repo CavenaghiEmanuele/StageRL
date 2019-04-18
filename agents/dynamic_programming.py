@@ -115,13 +115,3 @@ def q_from_v(env, V, s, gamma=1):
         for prob, next_state, reward, done in enviroment_class.probability(env)[s][a]:
             q[a] += prob * (reward + gamma * V[next_state])
     return q
-
-def policy_matrix_to_dict(policy):
-
-    dict = {}
-    for state in range(len(policy)):
-        p = {}
-        for action in range(len(policy[state])):
-            p[action] = policy[state][action]
-        dict[state] = p
-    return dict

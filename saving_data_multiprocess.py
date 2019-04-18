@@ -7,6 +7,7 @@ from time import sleep
 import itertools
 from multiprocessing import Pool
 import os
+import errno
 
 
 import agents.monte_carlo as MCA
@@ -16,7 +17,7 @@ import agents.n_step_sarsa as NSSA
 
 
 
-def input_for_agent(n_agent):
+def input_for_agent(n_agent, tests_moment):
 
     print()
     print("*************************************************")
@@ -34,19 +35,19 @@ def input_for_agent(n_agent):
         gamma = float(input("Insert the parameter gamma: "))
 
         agent ={
-            "type": agent_type,
+            "type": "MonteCarlo",
             "n_games": n_games,
             "n_episodes": n_episodes,
             "epsilon": epsilon,
             "gamma": gamma
         }
 
-    elif agent_type == "Dynamic programming" or agent_type == "DP":
+    elif (agent_type == "Dynamic programming" or agent_type == "DP") and tests_moment == "final":
         gamma = float(input("Insert the parameter gamma: "))
         theta = float(input("Insert the parameter theta: "))
 
         agent ={
-            "type": agent_type,
+            "type": "Dynamic programming",
             "gamma": gamma,
             "theta": theta
         }
@@ -59,7 +60,7 @@ def input_for_agent(n_agent):
         n_episodes = int(input("Insert the number of episodes for each game: "))
 
         agent ={
-            "type": agent_type,
+            "type": "Q learning",
             "alpha": alpha,
             "gamma": gamma,
             "epsilon": epsilon,
@@ -76,7 +77,7 @@ def input_for_agent(n_agent):
         n_episodes = int(input("Insert the number of episodes for each game: "))
 
         agent ={
-            "type": agent_type,
+            "type": "n-step SARSA",
             "alpha": alpha,
             "gamma": gamma,
             "epsilon": epsilon,
@@ -84,6 +85,12 @@ def input_for_agent(n_agent):
             "n_episodes": n_episodes,
             "n_step": n_step
         }
+
+
+    if (agent_type == "Dynamic programming" or agent_type == "DP") and tests_moment != "final":
+        print("Dynamic Programming agent can't have on_run or ten_perc test")
+        raise
+
 
     return agent
 
@@ -105,22 +112,21 @@ def create_custom_enviroment():
         )
 
 
-def create_legend_string(agent):
+def create_agent_params_string(agent):
 
     string = ""
 
     if agent["type"] == "MonteCarlo" or agent["type"] == "MC":
-        return "MonteCarlo, epsilon=" + str(agent["epsilon"]) + ", gamma=" + str(agent["gamma"]) + ", n_games=" + str(agent["n_games"]) + ", n_episodes=" + str(agent["n_episodes"])
+        return "Epsilon: " + str(agent["epsilon"]) + ", gamma: " + str(agent["gamma"]) + ", n_games: " + str(agent["n_games"]) + ", n_episodes: " + str(agent["n_episodes"])
 
     elif agent["type"] == "Dynamic programming" or agent["type"] == "DP":
-        return "Dynamic programming, gamma=" + str(agent["gamma"]) + ", theta=" + str(agent["theta"])
+        return "Gamma: " + str(agent["gamma"]) + ", theta: " + str(agent["theta"])
 
     elif agent["type"] == "Q learning" or agent["type"] == "QL":
-        return "Q learning, alpha=" + str(agent["alpha"]) + ", gamma=" + str(agent["gamma"]) + ", epsilon=" + str(agent["epsilon"]) + ", n_games=" + str(agent["n_games"]) + ", n_episodes=" + str(agent["n_episodes"])
+        return "Alpha: " + str(agent["alpha"]) + ", gamma: " + str(agent["gamma"]) + ", epsilon: " + str(agent["epsilon"]) + ", n_games: " + str(agent["n_games"]) + ", n_episodes: " + str(agent["n_episodes"])
 
     elif agent["type"] == "n-step SARSA" or agent["type"] == "NSS":
-        return "n-step SARSA, n-step=" + str(agent["n_step"]) + ",alpha=" + str(agent["alpha"]) + ", gamma=" + str(agent["gamma"]) + ", epsilon=" + str(agent["epsilon"]) + ", n_games=" + str(agent["n_games"]) + ", n_episodes=" + str(agent["n_episodes"])
-
+        return "N-step: " + str(agent["n_step"]) + ", alpha: " + str(agent["alpha"]) + ", gamma: " + str(agent["gamma"]) + ", epsilon: " + str(agent["epsilon"]) + ", n_games: " + str(agent["n_games"]) + ", n_episodes: " + str(agent["n_episodes"])
 
 
 def run_agent(agent_dict):
@@ -189,12 +195,21 @@ if __name__ == '__main__':
 
     n_agents = int(input("Insert the number of agents: "))
 
+    '''
+    enviroment_name = "Taxi-v2"
+    enviroment = gym.make(enviroment_name)
+    tests_moment = "ten_perc"
+    n_agents = 1
+    '''
 
 
     for i in range(n_agents):
-        agents_list.append(input_for_agent(i))
+        agents_list.append(input_for_agent(i, tests_moment))
 
 
+    '''
+    Launch agent
+    '''
 
     pool = Pool(len(os.sched_getaffinity(0))) #creo un pool di processi
     results = pool.starmap(run_agent, zip(agents_list)) #Ogni agente viene affidato ad un processo
@@ -203,14 +218,28 @@ if __name__ == '__main__':
     pool.join() # attendo che tutti gli agenti abbiano terminato il training per poi proseguire
 
 
-    out_file = open("test.txt","w")
 
+    '''
+    Create path and saving results
+    '''
+
+    base_path = "docs/" + enviroment_name + "/" + tests_moment
 
     for agent in range(len(agents_list)):
 
-        out_file.write(create_legend_string(agents_list[agent]))
-        out_file.write(" EOL\n")
-        out_file.write(str(results[agent]))
-        out_file.write(" EOA\n")
+        complete_path = base_path + "/" + agents_list[agent]["type"] + "/" + create_agent_params_string(agents_list[agent])
 
-    out_file.close()
+        if not os.path.exists(os.path.dirname(complete_path)):
+            try:
+                os.makedirs(os.path.dirname(complete_path))
+            except OSError as exc: # Guard against race condition
+                if exc.errno != errno.EEXIST:
+                    raise
+
+
+        out_file = open(complete_path ,"a")
+
+        out_file.write(str(results[agent]))
+        out_file.write("$\n")
+
+        out_file.close()
