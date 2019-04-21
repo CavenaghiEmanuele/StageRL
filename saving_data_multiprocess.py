@@ -8,6 +8,8 @@ from multiprocessing import Pool
 import os
 import errno
 import json
+from argparse import ArgumentParser as parser
+
 
 
 import agents.monte_carlo as MCA
@@ -94,6 +96,91 @@ def input_for_agent(n_agent, tests_moment):
     return agent
 
 
+def automatic_agent_generation(agent_type, n_games, n_episodes):
+
+    agents_list = []
+
+    if agent_type == "MonteCarlo" or agent_type == "MC":
+
+        epsilon = [0.3, 0.1, 0.05, 0.01, 0.005]
+        gamma = [1.0, 0.9, 0.8, 0.7, 0.5, 0.3]
+
+        combination = list(itertools.product(epsilon, gamma))
+
+        for item in combination:
+            agent ={
+                "type": "MonteCarlo",
+                "n_games": n_games,
+                "n_episodes": n_episodes,
+                "epsilon": item[0],
+                "gamma": item[1]
+            }
+            for _ in range(10):
+                agents_list.append(agent)
+
+    elif (agent_type == "Dynamic programming" or agent_type == "DP"):
+
+        gamma = [1.0, 0.9, 0.8, 0.7, 0.5, 0.3]
+        theta = [1e-3, 1e-4, 1e-5]
+
+        combination = list(itertools.product(gamma, theta))
+
+        for item in combination:
+
+            agent ={
+                "type": "Dynamic programming",
+                "gamma": item[0],
+                "theta": item[1]
+            }
+            for _ in range(10):
+                agents_list.append(agent)
+
+
+    elif agent_type == "Q learning" or agent_type == "QL":
+        alpha = [0.1, 0.2, 0.3, 0.4, 0.5]
+        gamma = [1.0, 0.9, 0.8, 0.7, 0.5, 0.3]
+        epsilon = [0.01, 0.05, 0.1, 0.2, 0.3]
+
+        combination = list(itertools.product(alpha, gamma, epsilon))
+
+        for item in combination:
+            agent ={
+                "type": "Q learning",
+                "alpha": item[0],
+                "gamma": item[1],
+                "epsilon": item[2],
+                "n_games": n_games,
+                "n_episodes": n_episodes
+            }
+            for _ in range(10):
+                agents_list.append(agent)
+
+    elif agent_type == "n-step SARSA" or agent_type == "NSS":
+        n_step = [2, 4, 8, 12, 16, 20]
+        alpha = [0.1, 0.2, 0.3, 0.4]
+        gamma = [1.0, 0.9, 0.8, 0.7, 0.5]
+        epsilon = [0.01, 0.05, 0.1, 0.2]
+
+        combination = list(itertools.product(n_step, alpha, gamma, epsilon))
+
+        for item in combination:
+            agent ={
+                "type": "n-step SARSA",
+                "alpha": item[1],
+                "gamma": item[2],
+                "epsilon": item[3],
+                "n_games": n_games,
+                "n_episodes": n_episodes,
+                "n_step": item[0]
+            }
+            for _ in range(10):
+                agents_list.append(agent)
+
+    return agents_list
+
+
+
+
 def create_custom_enviroment():
 
         gym.register(
@@ -116,16 +203,16 @@ def create_agent_params_string(agent):
     string = ""
 
     if agent["type"] == "MonteCarlo" or agent["type"] == "MC":
-        return "Epsilon: " + str(agent["epsilon"]) + ", gamma: " + str(agent["gamma"]) + ", n_games: " + str(agent["n_games"]) + ", n_episodes: " + str(agent["n_episodes"])
+        return "Epsilon= " + str(agent["epsilon"]) + ", gamma= " + str(agent["gamma"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
     elif agent["type"] == "Dynamic programming" or agent["type"] == "DP":
-        return "Gamma: " + str(agent["gamma"]) + ", theta: " + str(agent["theta"])
+        return "Gamma= " + str(agent["gamma"]) + ", theta= " + str(agent["theta"])
 
     elif agent["type"] == "Q learning" or agent["type"] == "QL":
-        return "Alpha: " + str(agent["alpha"]) + ", gamma: " + str(agent["gamma"]) + ", epsilon: " + str(agent["epsilon"]) + ", n_games: " + str(agent["n_games"]) + ", n_episodes: " + str(agent["n_episodes"])
+        return "Alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
     elif agent["type"] == "n-step SARSA" or agent["type"] == "NSS":
-        return "N-step: " + str(agent["n_step"]) + ", alpha: " + str(agent["alpha"]) + ", gamma: " + str(agent["gamma"]) + ", epsilon: " + str(agent["epsilon"]) + ", n_games: " + str(agent["n_games"]) + ", n_episodes: " + str(agent["n_episodes"])
+        return "N-step= " + str(agent["n_step"]) + ", alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
 
 def run_agent(agent_dict):
@@ -181,50 +268,61 @@ def run_agent(agent_dict):
 
 if __name__ == '__main__':
 
-    agents_list = []
+    parser = parser(prog='Saving_data_multiprocess', description='Reinforcement learning training agent')
+    parser.add_argument('-a', '--automatic', action='store_true', help='Generate automatically test for agent in enviroment')
+    args = parser.parse_args()
 
+    agents_list = []
     tests_result = []
     create_custom_enviroment()
 
 
     enviroment_name = input("Insert the enviroment name: ")
     enviroment = gym.make(enviroment_name) #Creazione ambiente
-
     tests_moment = input("Select the test type (final, on_run, ten_perc): ")
 
-    n_agents = int(input("Insert the number of agents: "))
+    #Generazione automatica degli agenti
+    if args.automatic:
+        agent_type = input("Insert the agent type: ")
+        if (agent_type == "Dynamic programming" or agent_type == "DP") and tests_moment != "final":
+            print("Dynamic Programming agent can't have on_run or ten_perc test")
+            raise
 
-    '''
-    for i in range(n_agents):
-        agents_list.append(input_for_agent(i, tests_moment))
+        n_games = int(input("Insert the number of games: "))
+        n_episodes = int(input("Insert the number of episodes for each game: "))
 
-    '''
+        agents_list = automatic_agent_generation(agent_type, n_games, n_episodes)
 
-    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+    #Scelta manuale degli agenti
+    else:
+        n_agents = int(input("Insert the number of agents: "))
 
-    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
-    agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        for i in range(n_agents):
+            agents_list.append(input_for_agent(i, tests_moment))
 
+        '''
+        agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'typeei': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
 
-
-
+        agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        agents_list.append({'type': 'Q learning', 'alpha': 0.4, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
+        '''
 
 
     '''
@@ -235,7 +333,6 @@ if __name__ == '__main__':
 
     pool.close()
     pool.join() # attendo che tutti gli agenti abbiano terminato il training per poi proseguire
-
 
 
     '''

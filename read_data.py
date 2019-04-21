@@ -80,16 +80,16 @@ def create_agent_params_string(agent):
     string = ""
 
     if agent["type"] == "MonteCarlo" or agent["type"] == "MC":
-        return "Epsilon: " + str(agent["epsilon"]) + ", gamma: " + str(agent["gamma"]) + ", n_games: " + str(agent["n_games"]) + ", n_episodes: " + str(agent["n_episodes"])
+        return "Epsilon= " + str(agent["epsilon"]) + ", gamma= " + str(agent["gamma"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
     elif agent["type"] == "Dynamic programming" or agent["type"] == "DP":
-        return "Gamma: " + str(agent["gamma"]) + ", theta: " + str(agent["theta"])
+        return "Gamma= " + str(agent["gamma"]) + ", theta= " + str(agent["theta"])
 
     elif agent["type"] == "Q learning" or agent["type"] == "QL":
-        return "Alpha: " + str(agent["alpha"]) + ", gamma: " + str(agent["gamma"]) + ", epsilon: " + str(agent["epsilon"]) + ", n_games: " + str(agent["n_games"]) + ", n_episodes: " + str(agent["n_episodes"])
+        return "Alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
     elif agent["type"] == "n-step SARSA" or agent["type"] == "NSS":
-        return "N-step: " + str(agent["n_step"]) + ", alpha: " + str(agent["alpha"]) + ", gamma: " + str(agent["gamma"]) + ", epsilon: " + str(agent["epsilon"]) + ", n_games: " + str(agent["n_games"]) + ", n_episodes: " + str(agent["n_episodes"])
+        return "N-step= " + str(agent["n_step"]) + ", alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes: " + str(agent["n_episodes"])
 
 
 def create_legend_string(agent):
