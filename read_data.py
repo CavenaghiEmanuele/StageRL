@@ -89,7 +89,7 @@ def create_agent_params_string(agent):
         return "Alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
     elif agent["type"] == "n-step SARSA" or agent["type"] == "NSS":
-        return "N-step= " + str(agent["n_step"]) + ", alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes: " + str(agent["n_episodes"])
+        return "N-step= " + str(agent["n_step"]) + ", alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
 
 def create_legend_string(agent):
@@ -120,7 +120,6 @@ if __name__ == '__main__':
     path = "docs/" + enviroment_name + "/" + tests_moment + "/" + agent["type"] + "/" + create_agent_params_string(agent)
 
 
-    #path = "./docs/Taxi-v2/ten_perc/Q learning/Alpha: 0.1, gamma: 1.0, epsilon: 0.1, n_games: 100, n_episodes: 10"
     with open(path) as inputfile:
         tests_list = json.load(inputfile)
 
