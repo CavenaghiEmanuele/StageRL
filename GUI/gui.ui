@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="10,10">
+  <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,0">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
@@ -28,10 +28,17 @@
        <item>
         <widget class="QLineEdit" name="enviroment_name"/>
        </item>
+       <item>
+        <widget class="QPushButton" name="add_enviroment">
+         <property name="text">
+          <string>Add enviroment</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0">
+      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,0">
        <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
@@ -42,12 +49,19 @@
        <item>
         <widget class="QLineEdit" name="tests_moment"/>
        </item>
+       <item>
+        <widget class="QPushButton" name="add_tests_moment">
+         <property name="text">
+          <string>Add tests moment</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="monte_carlo">
         <attribute name="title">
@@ -142,7 +156,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_5"/>
+            <widget class="QLineEdit" name="dp_gamma"/>
            </item>
           </layout>
          </item>
@@ -156,12 +170,12 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_6"/>
+            <widget class="QLineEdit" name="dp_theta"/>
            </item>
           </layout>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_2">
+          <widget class="QPushButton" name="add_dp_to_graph">
            <property name="text">
             <string>Add to graph</string>
            </property>
@@ -184,7 +198,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_11"/>
+            <widget class="QLineEdit" name="ql_alpha"/>
            </item>
           </layout>
          </item>
@@ -198,7 +212,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_10"/>
+            <widget class="QLineEdit" name="ql_gamma"/>
            </item>
           </layout>
          </item>
@@ -212,7 +226,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_9"/>
+            <widget class="QLineEdit" name="ql_epsilon"/>
            </item>
           </layout>
          </item>
@@ -226,7 +240,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_8">
+            <widget class="QLineEdit" name="ql_n_games">
              <property name="text">
               <string>100</string>
              </property>
@@ -244,7 +258,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_7">
+            <widget class="QLineEdit" name="ql_n_episodes">
              <property name="text">
               <string>100</string>
              </property>
@@ -253,7 +267,7 @@
           </layout>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="add_ql_to_graph">
            <property name="text">
             <string>Add to graph</string>
            </property>
@@ -276,7 +290,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_17"/>
+            <widget class="QLineEdit" name="nss_n_step"/>
            </item>
           </layout>
          </item>
@@ -290,7 +304,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_16"/>
+            <widget class="QLineEdit" name="nss_alpha"/>
            </item>
           </layout>
          </item>
@@ -304,7 +318,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_15"/>
+            <widget class="QLineEdit" name="nss_gamma"/>
            </item>
           </layout>
          </item>
@@ -318,7 +332,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_14"/>
+            <widget class="QLineEdit" name="nss_epsilon"/>
            </item>
           </layout>
          </item>
@@ -332,7 +346,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_13">
+            <widget class="QLineEdit" name="nss_n_games">
              <property name="text">
               <string>100</string>
              </property>
@@ -350,7 +364,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="lineEdit_12">
+            <widget class="QLineEdit" name="nss_n_episodes">
              <property name="text">
               <string>100</string>
              </property>
@@ -359,7 +373,7 @@
           </layout>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_4">
+          <widget class="QPushButton" name="add_nss_to_graph">
            <property name="text">
             <string>Add to graph</string>
            </property>
@@ -372,11 +386,62 @@
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0,0">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_23">
+       <item>
+        <widget class="QLabel" name="label_19">
+         <property name="text">
+          <string>Enviroment name:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="enviroment_name_recap">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_24">
+       <item>
+        <widget class="QLabel" name="label_20">
+         <property name="text">
+          <string>Tests moment: </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="tests_moment_recap">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QListWidget" name="agent_list_recap">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(114, 159, 207);
+selection-background-color: rgb(252, 233, 79);</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="delete_current_item">
+       <property name="text">
+        <string>Delete item</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QPushButton" name="show_graph">
        <property name="text">
-        <string>SHOW GRAPH</string>
+        <string>Show graph</string>
        </property>
       </widget>
      </item>
