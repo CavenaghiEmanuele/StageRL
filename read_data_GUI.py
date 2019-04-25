@@ -175,23 +175,34 @@ class AppWindow(QDialog):
     @pyqtSlot()
     def show_graph_clicked(self):
 
-        path = "docs/" + self.enviroment_name_recap.text() + "/" + self.tests_moment_recap.text() + "/" + agent_list[0]["type"] + "/" + create_agent_params_string(agent_list[0])
+        base_path = "docs/" + self.enviroment_name_recap.text() + "/" + self.tests_moment_recap.text() + "/"
+        legends = {}
 
-        with open(path) as inputfile:
-            tests_list = json.load(inputfile)
 
-        legend = []
+        for agent in agent_list:
 
-        for test_type in tests_list[0]:
-            plt.figure(test_type)
+            path = base_path + agent["type"] + "/" + create_agent_params_string(agent)
 
-            for test_agent in range(len(tests_list)):
+            with open(path) as inputfile:
+                tests_list = json.load(inputfile)
 
-                legend.append(create_legend_string(agent_list[0]))
-                plt.plot(tests_list[test_agent][test_type])
 
-            plt.legend(legend, loc='upper left')
-            plt.ylabel(test_type)
+            for test_type in tests_list[0]:
+
+                if not test_type in legends:
+                    legends.update({test_type: list()})
+
+                plt.figure(test_type)
+                plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
+
+
+                for test_agent in range(len(tests_list)):
+
+                    plt.plot(tests_list[test_agent][test_type])
+                    legends[test_type].append(create_legend_string(agent))
+
+                plt.ylabel(test_type)
+                plt.legend(legends[test_type], loc='upper left')
 
         plt.show()
 

@@ -4,10 +4,7 @@ import itertools as it
 def run_game(env, action):
 
     next_state, reward, done, info = env.step(action)
-    #print(next_state)
     state = next_state[0] + 32*next_state[1] + 32*11*int(next_state[2])
-    #print(state)
-
 
     return [state, reward, done, info]
 
