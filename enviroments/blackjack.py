@@ -1,6 +1,3 @@
-import random
-import itertools as it
-
 def run_game(env, action):
 
     next_state, reward, done, info = env.step(action)
@@ -40,19 +37,7 @@ def type_test():
     return ["average", "%wins", "%drawing", "%loss"]
 
 
-
 def number_states(env):
-
-    '''
-    list = []
-    for k in range(0, 32):
-        for j in range(0, 11):
-            for i in [True, False]:
-                list.append(0)
-
-    tmp = [range(0, 32), range(0, 11), [True, False]]
-    tmp = len(list(it.product(*tmp)))
-    '''
     return list(range(0, 32*11*2))
 
 
@@ -63,7 +48,6 @@ def reset_env(env):
 
     state = env.reset()
     return state[0] + 32*state[1] + 32*11*int(state[2])
-
 
 
 def probability(env):

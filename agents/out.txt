@@ -1,0 +1,345 @@
+************* Module agents
+C:  1, 0: Missing module docstring (missing-docstring)
+W:  1, 0: Wildcard import agents (wildcard-import)
+************* Module agents.monte_carlo
+C:  1, 0: Missing module docstring (missing-docstring)
+E:  4, 0: Unable to import 'tqdm' (import-error)
+E:  6, 0: Unable to import 'enviroment_choose' (import-error)
+C:  6, 0: Import "import enviroment_choose" should be placed at the top of the module (wrong-import-position)
+C: 11, 0: Missing function docstring (missing-docstring)
+R: 11, 0: Too many arguments (6/5) (too-many-arguments)
+W: 13, 4: Global variable '_ENVIROMENT_CLASS' undefined at the module level (global-variable-undefined)
+W: 14, 4: Global variable '_ENV' undefined at the module level (global-variable-undefined)
+W: 15, 4: Global variable '_N_GAMES' undefined at the module level (global-variable-undefined)
+W: 16, 4: Global variable '_N_EPISODES' undefined at the module level (global-variable-undefined)
+W: 17, 4: Global variable '_EPSILON' undefined at the module level (global-variable-undefined)
+W: 18, 4: Global variable '_GAMMA' undefined at the module level (global-variable-undefined)
+W: 19, 4: Global variable '_TESTS_MOMENT' undefined at the module level (global-variable-undefined)
+C: 45, 0: Missing function docstring (missing-docstring)
+W: 47, 4: Global variable '_POLICY' undefined at the module level (global-variable-undefined)
+W: 48, 4: Global variable '_Q' undefined at the module level (global-variable-undefined)
+W: 49, 4: Global variable '_RETURNS_NUMBER' undefined at the module level (global-variable-undefined)
+W: 50, 4: Global variable '_TESTS_RESULT' undefined at the module level (global-variable-undefined)
+W: 51, 4: Global variable '_TYPE_TEST_LIST' undefined at the module level (global-variable-undefined)
+W: 68,-1: String statement has no effect (pointless-string-statement)
+W: 82,-1: String statement has no effect (pointless-string-statement)
+C: 93, 0: Missing function docstring (missing-docstring)
+R: 93, 0: Too many local variables (22/15) (too-many-locals)
+C: 95, 4: Variable name "g" doesn't conform to snake_case naming style (invalid-name)
+C:105, 8: Variable name "n" doesn't conform to snake_case naming style (invalid-name)
+C:125, 8: Variable name "g" doesn't conform to snake_case naming style (invalid-name)
+C:145,16: Variable name "a" doesn't conform to snake_case naming style (invalid-name)
+C:170,12: Variable name "n" doesn't conform to snake_case naming style (invalid-name)
+W:183,-1: String statement has no effect (pointless-string-statement)
+************* Module agents.n_step_sarsa
+C:  1, 0: Missing module docstring (missing-docstring)
+E:  5, 0: Unable to import 'enviroment_choose' (import-error)
+E:  6, 0: Unable to import 'tqdm' (import-error)
+C: 10, 0: Missing function docstring (missing-docstring)
+R: 10, 0: Too many arguments (8/5) (too-many-arguments)
+W: 12, 4: Global variable '_ENVIROMENT_CLASS' undefined at the module level (global-variable-undefined)
+W: 13, 4: Global variable '_ENV' undefined at the module level (global-variable-undefined)
+W: 14, 4: Global variable '_N_GAMES' undefined at the module level (global-variable-undefined)
+W: 15, 4: Global variable '_N_EPISODES' undefined at the module level (global-variable-undefined)
+W: 16, 4: Global variable '_ALPHA' undefined at the module level (global-variable-undefined)
+W: 17, 4: Global variable '_GAMMA' undefined at the module level (global-variable-undefined)
+W: 18, 4: Global variable '_EPSILON' undefined at the module level (global-variable-undefined)
+W: 19, 4: Global variable '_N_STEP' undefined at the module level (global-variable-undefined)
+W: 20, 4: Global variable '_TESTS_MOMENT' undefined at the module level (global-variable-undefined)
+C: 44, 0: Missing function docstring (missing-docstring)
+W: 46, 4: Global variable '_POLICY' undefined at the module level (global-variable-undefined)
+W: 47, 4: Global variable '_Q' undefined at the module level (global-variable-undefined)
+W: 48, 4: Global variable '_TYPE_TEST_LIST' undefined at the module level (global-variable-undefined)
+W: 49, 4: Global variable '_TESTS_RESULT' undefined at the module level (global-variable-undefined)
+W: 66,-1: String statement has no effect (pointless-string-statement)
+W: 80,-1: String statement has no effect (pointless-string-statement)
+C: 90, 0: Missing function docstring (missing-docstring)
+R: 90, 0: Too many local variables (24/15) (too-many-locals)
+C: 95, 4: Variable name "n" doesn't conform to snake_case naming style (invalid-name)
+C:111, 4: Variable name "T" doesn't conform to snake_case naming style (invalid-name)
+C:112, 8: Variable name "t" doesn't conform to snake_case naming style (invalid-name)
+C:121,16: Variable name "T" doesn't conform to snake_case naming style (invalid-name)
+C:125,16: Variable name "n" doesn't conform to snake_case naming style (invalid-name)
+C:140,12: Variable name "g" doesn't conform to snake_case naming style (invalid-name)
+C:142,16: Variable name "g" doesn't conform to snake_case naming style (invalid-name)
+C:144,16: Variable name "g" doesn't conform to snake_case naming style (invalid-name)
+C:156,16: Variable name "a" doesn't conform to snake_case naming style (invalid-name)
+R: 90, 0: Too many branches (15/12) (too-many-branches)
+C:170, 0: Missing function docstring (missing-docstring)
+C:184,12: Variable name "n" doesn't conform to snake_case naming style (invalid-name)
+W:197,-1: String statement has no effect (pointless-string-statement)
+************* Module agents.q_learning
+C:  1, 0: Missing module docstring (missing-docstring)
+E:  4, 0: Unable to import 'enviroment_choose' (import-error)
+E:  5, 0: Unable to import 'tqdm' (import-error)
+C:  9, 0: Missing function docstring (missing-docstring)
+R:  9, 0: Too many arguments (7/5) (too-many-arguments)
+W: 11, 4: Global variable '_ENVIROMENT_CLASS' undefined at the module level (global-variable-undefined)
+W: 12, 4: Global variable '_ENV' undefined at the module level (global-variable-undefined)
+W: 13, 4: Global variable '_N_GAMES' undefined at the module level (global-variable-undefined)
+W: 14, 4: Global variable '_N_EPISODES' undefined at the module level (global-variable-undefined)
+W: 15, 4: Global variable '_ALPHA' undefined at the module level (global-variable-undefined)
+W: 16, 4: Global variable '_GAMMA' undefined at the module level (global-variable-undefined)
+W: 17, 4: Global variable '_EPSILON' undefined at the module level (global-variable-undefined)
+W: 18, 4: Global variable '_TESTS_MOMENT' undefined at the module level (global-variable-undefined)
+C: 43, 0: Missing function docstring (missing-docstring)
+W: 45, 4: Global variable '_Q_TABLE' undefined at the module level (global-variable-undefined)
+W: 46, 4: Global variable '_TESTS_RESULT' undefined at the module level (global-variable-undefined)
+W: 47, 4: Global variable '_TYPE_TEST_LIST' undefined at the module level (global-variable-undefined)
+W: 60,-1: String statement has no effect (pointless-string-statement)
+W: 74,-1: String statement has no effect (pointless-string-statement)
+C: 84, 0: Missing function docstring (missing-docstring)
+C:104, 0: Missing function docstring (missing-docstring)
+************* Module agents.dynamic_programming
+C:  1, 0: Missing module docstring (missing-docstring)
+E:  4, 0: Unable to import 'enviroment_choose' (import-error)
+E:  5, 0: Unable to import 'tqdm' (import-error)
+C:  9, 0: Missing function docstring (missing-docstring)
+R:  9, 0: Too many local variables (19/15) (too-many-locals)
+W: 11, 4: Global variable '_ENVIROMENT_CLASS' undefined at the module level (global-variable-undefined)
+W: 22,-1: String statement has no effect (pointless-string-statement)
+W:  9,19: Unused argument 'tests_moment' (unused-argument)
+C: 69, 0: Missing function docstring (missing-docstring)
+C: 75, 8: Variable name "v" doesn't conform to snake_case naming style (invalid-name)
+C: 87, 0: Missing function docstring (missing-docstring)
+C: 88, 4: Variable name "v" doesn't conform to snake_case naming style (invalid-name)
+C: 93,12: Variable name "s" doesn't conform to snake_case naming style (invalid-name)
+C: 94,12: Variable name "vs" doesn't conform to snake_case naming style (invalid-name)
+C: 95,16: Variable name "a" doesn't conform to snake_case naming style (invalid-name)
+C: 97,20: Variable name "vs" doesn't conform to snake_case naming style (invalid-name)
+C:104, 0: Argument name "v" doesn't conform to snake_case naming style (invalid-name)
+C:104, 0: Missing function docstring (missing-docstring)
+C:108, 8: Variable name "s" doesn't conform to snake_case naming style (invalid-name)
+C:109, 8: Variable name "q" doesn't conform to snake_case naming style (invalid-name)
+C:117, 0: Argument name "v" doesn't conform to snake_case naming style (invalid-name)
+C:117, 0: Argument name "s" doesn't conform to snake_case naming style (invalid-name)
+C:117, 0: Missing function docstring (missing-docstring)
+C:118, 4: Variable name "q" doesn't conform to snake_case naming style (invalid-name)
+C:119, 8: Variable name "a" doesn't conform to snake_case naming style (invalid-name)
+R:  1, 0: Similar lines in 2 files
+==agents.monte_carlo:159
+==agents.n_step_sarsa:173
+    for type_test in _TYPE_TEST_LIST:
+        test_iteration_i.update({type_test: 0})
+
+    for _ in range(n_test):
+
+        done = False
+        state = _ENVIROMENT_CLASS.reset_env(_ENV)
+
+        while not done:
+
+            n = random.uniform(0, sum(_POLICY[state]))
+            top_range = 0
+            action_name = -1
+            for prob in _POLICY[state]:
+                action_name += 1
+                top_range += prob
+                if n < top_range:
+                    action = action_name
+                    break
+            '''
+            Scegliere sempre e solo l'azione migliore puo' portare l'agente a restare
+            bloccato, con una scelta randomica paghiamo in % di vittorie ma
+            evitiamo il problema
+            '''
+            test_dict = _ENVIROMENT_CLASS.test_policy(_ENV, action)
+            state = test_dict["env_info"]["next_state"]
+            done = test_dict["env_info"]["done"]
+
+            for type_test in _TYPE_TEST_LIST:
+                test_iteration_i[type_test] += test_dict[type_test]
+
+    for type_test in _TYPE_TEST_LIST:
+        test_iteration_i[type_test] = test_iteration_i[type_test] / n_test
+
+    _TESTS_RESULT.append(test_iteration_i) (duplicate-code)
+R:  1, 0: Similar lines in 2 files
+==agents.n_step_sarsa:58
+==agents.q_learning:52
+    _TESTS_RESULT = []
+    #Ottengo dall'ambiente i tipi di test che mi puo' restituire
+    _TYPE_TEST_LIST = _ENVIROMENT_CLASS.type_test()
+
+
+    '''
+    TRAINING
+    '''
+    for i_game in tqdm(range(_N_GAMES)):
+        for _ in range(_N_EPISODES):
+            training()
+
+        if (i_game % 10) == 0 and _TESTS_MOMENT == "ten_perc":
+            testing()
+
+        if _TESTS_MOMENT == "on_run":
+            testing()
+
+
+    '''
+    TESTING if type_test is final
+    '''
+    if _TESTS_MOMENT == "final":
+        for _ in range(100):
+            testing()
+
+
+ (duplicate-code)
+R:  1, 0: Similar lines in 3 files
+==agents.monte_carlo:60
+==agents.n_step_sarsa:58
+==agents.q_learning:52
+    _TESTS_RESULT = []
+    #Ottengo dall'ambiente i tipi di test che mi puo' restituire
+    _TYPE_TEST_LIST = _ENVIROMENT_CLASS.type_test()
+
+
+    '''
+    TRAINING
+    '''
+    for i_game in tqdm(range(_N_GAMES)):
+        for _ in range(_N_EPISODES):
+            training()
+
+        if (i_game % 10) == 0 and _TESTS_MOMENT == "ten_perc":
+            testing()
+
+        if _TESTS_MOMENT == "on_run":
+            testing()
+
+
+    '''
+    TESTING if type_test is final
+    '''
+    if _TESTS_MOMENT == "final": (duplicate-code)
+R:  1, 0: Similar lines in 2 files
+==agents.n_step_sarsa:169
+==agents.q_learning:103
+def testing():
+
+    n_test = 100
+    test_iteration_i = {}
+    for type_test in _TYPE_TEST_LIST:
+        test_iteration_i.update({type_test: 0})
+
+    for _ in range(n_test):
+
+        done = False
+        state = _ENVIROMENT_CLASS.reset_env(_ENV)
+
+        while not done:
+ (duplicate-code)
+R:  1, 0: Similar lines in 2 files
+==agents.monte_carlo:102
+==agents.n_step_sarsa:181
+        while not done:
+
+            n = random.uniform(0, sum(_POLICY[state]))
+            top_range = 0
+            action_name = -1
+            for prob in _POLICY[state]:
+                action_name += 1
+                top_range += prob
+                if n < top_range:
+                    action = action_name
+                    break
+            '''
+            Scegliere sempre e solo l'azione migliore puo' portare l'agente a restare (duplicate-code)
+R:  1, 0: Similar lines in 2 files
+==agents.n_step_sarsa:32
+==agents.q_learning:31
+    tests_result_dict = {}
+
+    for type_test in _TYPE_TEST_LIST:
+        tests_result_dict.update({type_test: []})
+
+    for type_test in tests_result_dict:
+        for test in results["tests_result"]:
+            tests_result_dict[type_test].append(test[type_test])
+
+    return {"agent_info": results["agent_info"], "tests_result": tests_result_dict}
+ (duplicate-code)
+R:  1, 0: Similar lines in 3 files
+==agents.monte_carlo:183
+==agents.n_step_sarsa:197
+==agents.q_learning:122
+            test_dict = _ENVIROMENT_CLASS.test_policy(_ENV, action)
+            state = test_dict["env_info"]["next_state"]
+            done = test_dict["env_info"]["done"]
+
+            for type_test in _TYPE_TEST_LIST:
+                test_iteration_i[type_test] += test_dict[type_test]
+
+    for type_test in _TYPE_TEST_LIST:
+        test_iteration_i[type_test] = test_iteration_i[type_test] / n_test
+
+    _TESTS_RESULT.append(test_iteration_i) (duplicate-code)
+R:  1, 0: Similar lines in 2 files
+==agents.monte_carlo:159
+==agents.q_learning:107
+    for type_test in _TYPE_TEST_LIST:
+        test_iteration_i.update({type_test: 0})
+
+    for _ in range(n_test):
+
+        done = False
+        state = _ENVIROMENT_CLASS.reset_env(_ENV)
+
+        while not done:
+ (duplicate-code)
+R:  1, 0: Similar lines in 3 files
+==agents.monte_carlo:31
+==agents.n_step_sarsa:32
+==agents.q_learning:31
+    tests_result_dict = {}
+
+    for type_test in _TYPE_TEST_LIST:
+        tests_result_dict.update({type_test: []})
+
+    for type_test in tests_result_dict:
+        for test in results["tests_result"]:
+            tests_result_dict[type_test].append(test[type_test])
+ (duplicate-code)
+R:  1, 0: Similar lines in 2 files
+==agents.n_step_sarsa:21
+==agents.q_learning:20
+    _ENVIROMENT_CLASS = enviroment_choose.env_choose(env)
+    _ENV = env
+    _N_GAMES = n_games
+    _N_EPISODES = n_episodes
+    _ALPHA = alpha
+    _GAMMA = gamma
+    _EPSILON = epsilon (duplicate-code)
+R:  1, 0: Similar lines in 2 files
+==agents.n_step_sarsa:11
+==agents.q_learning:10
+    global _ENVIROMENT_CLASS
+    global _ENV
+    global _N_GAMES
+    global _N_EPISODES
+    global _ALPHA
+    global _GAMMA
+    global _EPSILON (duplicate-code)
+R:  1, 0: Similar lines in 2 files
+==agents.monte_carlo:97
+==agents.q_learning:85
+    state = _ENVIROMENT_CLASS.reset_env(_ENV)
+    action = 0
+    reward = 0
+    done = False
+
+    while not done:
+ (duplicate-code)
+R:  1, 0: Similar lines in 2 files
+==agents.monte_carlo:18
+==agents.n_step_sarsa:19
+    global _TESTS_MOMENT
+
+    _ENVIROMENT_CLASS = enviroment_choose.env_choose(env)
+    _ENV = env
+    _N_GAMES = n_games
+    _N_EPISODES = n_episodes (duplicate-code)
+
+------------------------------------------------------------------
+Your code has been rated at 6.19/10 (previous run: 6.03/10, +0.16)
+

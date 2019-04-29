@@ -386,7 +386,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0,0">
+    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0,0,0">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_23">
        <item>
@@ -419,6 +419,31 @@
          <property name="text">
           <string/>
          </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLabel" name="label_21">
+         <property name="text">
+          <string>How to show the agent: </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="how_result">
+         <item>
+          <property name="text">
+           <string>All results</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Average results</string>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>

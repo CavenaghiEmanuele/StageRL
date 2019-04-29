@@ -55,9 +55,6 @@ class NStepSarsaItem(QWidget):
 
 
 
-
-
-
 class AppWindow(QDialog):
     def __init__(self):
         super(AppWindow, self).__init__()
@@ -188,18 +185,41 @@ class AppWindow(QDialog):
 
 
             for test_type in tests_list[0]:
-
                 if not test_type in legends:
                     legends.update({test_type: list()})
 
                 plt.figure(test_type)
                 plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
 
+                '''
+                HOW TO SHOW RESULT HERE
+                '''
+                if self.how_result.currentText() == "All results":
 
-                for test_agent in range(len(tests_list)):
+                    for i_test_agent in range(len(tests_list)):
+                        plt.plot(tests_list[i_test_agent][test_type])
+                        legends[test_type].append(create_legend_string(agent))
 
-                    plt.plot(tests_list[test_agent][test_type])
+
+                elif self.how_result.currentText() == "Average results":
+
+                    sum = []
+                    for _ in tests_list[0][test_type]:
+                        sum.append(0)
+
+                    for test_of_i_agent in tests_list:
+                        for i in range(len(test_of_i_agent[test_type])):
+                            sum[i] += test_of_i_agent[test_type][i]
+
+                    for i in range(len(sum)):
+                        sum[i] = sum[i] / len(tests_list)
+
+                    plt.plot(sum)
                     legends[test_type].append(create_legend_string(agent))
+
+
+
+
 
                 plt.ylabel(test_type)
                 plt.legend(legends[test_type], loc='upper left')
@@ -251,11 +271,8 @@ if __name__ == '__main__':
 
     agent_list = []
 
-
-
     enviroment_name = ""
     tests_moment = ""
-
 
     app = QApplication(sys.argv)
     w = AppWindow()

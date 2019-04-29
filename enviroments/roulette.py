@@ -1,6 +1,3 @@
-import random
-
-
 def run_game(env, action):
 
     return env.step(action)
