@@ -26,7 +26,64 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="enviroment_name"/>
+        <widget class="QComboBox" name="enviroment_name">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <item>
+          <property name="text">
+           <string>Select enviroment</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Blackjack-v0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>FrozenLake-v0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>FrozenLake8x8-v0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>FrozenLakeNotSlippery4x4-v0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>FrozenLakeNotSlippery8x8-v0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>MountainCar-v0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NChain-v0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Roulette-v0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Taxi-v2</string>
+          </property>
+         </item>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="add_enviroment">
@@ -47,7 +104,34 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="tests_moment"/>
+        <widget class="QComboBox" name="tests_moment">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <item>
+          <property name="text">
+           <string>Select tests moment</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>final</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ten_perc</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>on_run</string>
+          </property>
+         </item>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="add_tests_moment">
@@ -59,9 +143,12 @@
       </layout>
      </item>
      <item>
-      <widget class="QTabWidget" name="tabWidget">
+      <widget class="QTabWidget" name="agent_tab_widget">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="currentIndex">
-        <number>3</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="monte_carlo">
         <attribute name="title">

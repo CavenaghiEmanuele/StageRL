@@ -1,6 +1,9 @@
 import sys
+import os
+import re
 import json
 import matplotlib.pyplot as plt
+from math import pow, sqrt
 from PyQt5.QtGui import *
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QApplication, QWidget, QDialog
@@ -79,85 +82,193 @@ class AppWindow(QDialog):
     def add_enviroment_clicked(self):
         del agent_list[:]
         self.agent_list_recap.clear()
-        self.enviroment_name_recap.setText(self.enviroment_name.text())
+
+        if self.enviroment_name.currentText() != "Select enviroment":
+            self.enviroment_name_recap.setText(self.enviroment_name.currentText())
+            if self.tests_moment_recap.text() != "":
+                self.agent_tab_widget.setEnabled(True)
+
 
     @pyqtSlot()
     def add_tests_moment_clicked(self):
         del agent_list[:]
         self.agent_list_recap.clear()
-        self.tests_moment_recap.setText(self.tests_moment.text())
 
+        if self.tests_moment.currentText() != "Select tests moment":
+            self.tests_moment_recap.setText(self.tests_moment.currentText())
+            if self.enviroment_name_recap.text() != "":
+                self.agent_tab_widget.setEnabled(True)
 
 
 
     @pyqtSlot()
     def add_mc_to_graph_clicked(self):
 
-        agent ={
-            "type": "MonteCarlo",
-            "n_games": self.mc_n_games.text(),
-            "n_episodes": self.mc_n_episodes.text(),
-            "epsilon": self.mc_epsilon.text(),
-            "gamma": self.mc_gamma.text()
-        }
-        agent_list.append(agent)
-        Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
-        Item_Widget = MonteCarloItem(agent)
-        Item.setSizeHint(Item_Widget.sizeHint())
-        self.agent_list_recap.addItem(Item)
-        self.agent_list_recap.setItemWidget(Item, Item_Widget)
+        env_name = self.enviroment_name_recap.text()
+        tests_moment = self.tests_moment_recap.text()
+        n_games = self.mc_n_games.text()
+        n_episodes = self.mc_n_episodes.text()
+        epsilon = [self.mc_epsilon.text()]
+        gamma = [self.mc_gamma.text()]
+
+        if epsilon[0] == "all" and gamma[0] == "all":
+            print("Only one parameter can be \"all\"")
+
+        else:
+
+            if epsilon[0] == "all":
+                epsilon = get_all_parameter("MonteCarlo", "Epsilon", env_name, tests_moment)
+
+            elif gamma[0] == "all":
+                gamma = get_all_parameter("MonteCarlo", "gamma", env_name, tests_moment)
+
+            for e in epsilon:
+                for g in gamma:
+                    agent ={
+                        "type": "MonteCarlo",
+                        "n_games": n_games,
+                        "n_episodes": n_episodes,
+                        "epsilon": e,
+                        "gamma": g
+                    }
+                    agent_list.append(agent)
+                    Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
+                    Item_Widget = MonteCarloItem(agent)
+                    Item.setSizeHint(Item_Widget.sizeHint())
+                    self.agent_list_recap.addItem(Item)
+                    self.agent_list_recap.setItemWidget(Item, Item_Widget)
 
     @pyqtSlot()
     def add_dp_to_graph_clicked(self):
 
-        agent ={
-            "type": "Dynamic programming",
-            "gamma": self.dp_gamma.text(),
-            "theta": self.dp_theta.text()
-        }
-        agent_list.append(agent)
-        Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
-        Item_Widget = DynamicProgrammingItem(agent)
-        Item.setSizeHint(Item_Widget.sizeHint())
-        self.agent_list_recap.addItem(Item)
-        self.agent_list_recap.setItemWidget(Item, Item_Widget)
+        env_name = self.enviroment_name_recap.text()
+        tests_moment = self.tests_moment_recap.text()
+        theta = [self.dp_theta.text()]
+        gamma = [self.dp_gamma.text()]
+
+        if theta[0] == "all" and gamma[0] == "all":
+            print("Only one parameter can be \"all\"")
+
+        else:
+
+            if theta[0] == "all":
+                theta = get_all_parameter("Dynamic programming", "theta", env_name, tests_moment)
+
+            elif gamma[0] == "all":
+                gamma = get_all_parameter("Dynamic programming", "Gamma", env_name, tests_moment)
+
+            for t in theta:
+                for g in gamma:
+                    agent ={
+                        "type": "Dynamic programming",
+                        "gamma": g,
+                        "theta": t
+                    }
+                    agent_list.append(agent)
+                    Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
+                    Item_Widget = DynamicProgrammingItem(agent)
+                    Item.setSizeHint(Item_Widget.sizeHint())
+                    self.agent_list_recap.addItem(Item)
+                    self.agent_list_recap.setItemWidget(Item, Item_Widget)
+
 
     @pyqtSlot()
     def add_ql_to_graph_clicked(self):
 
-        agent ={
-            "type": "Q learning",
-            "alpha": self.ql_alpha.text(),
-            "gamma": self.ql_gamma.text(),
-            "epsilon": self.ql_epsilon.text(),
-            "n_games": self.ql_n_games.text(),
-            "n_episodes": self.ql_n_episodes.text()
-        }
-        agent_list.append(agent)
-        Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
-        Item_Widget = QLearningItem(agent)
-        Item.setSizeHint(Item_Widget.sizeHint())
-        self.agent_list_recap.addItem(Item)
-        self.agent_list_recap.setItemWidget(Item, Item_Widget)
+        env_name = self.enviroment_name_recap.text()
+        tests_moment = self.tests_moment_recap.text()
+        n_games = self.ql_n_games.text()
+        n_episodes = self.ql_n_episodes.text()
+        alpha = [self.ql_alpha.text()]
+        gamma = [self.ql_gamma.text()]
+        epsilon = [self.ql_epsilon.text()]
+
+        if alpha[0] == "all" and gamma[0] == "all" and epsilon[0] == "all":
+            print("Only one parameter can be \"all\"")
+
+        elif alpha[0] == "all" and gamma[0] == "all":
+            print("Only one parameter can be \"all\"")
+
+        elif alpha[0] == "all" and epsilon[0] == "all":
+            print("Only one parameter can be \"all\"")
+
+        elif gamma[0] == "all" and epsilon[0] == "all":
+            print("Only one parameter can be \"all\"")
+
+        else:
+            if alpha[0] == "all":
+                alpha = get_all_parameter("Q learning", "Alpha", env_name, tests_moment)
+
+            elif gamma[0] == "all":
+                gamma = get_all_parameter("Q learning", "gamma", env_name, tests_moment)
+
+            elif epsilon[0] == "all":
+                epsilon = get_all_parameter("Q learning", "epsilon", env_name, tests_moment)
+
+            for a in alpha:
+                for g in gamma:
+                    for e in epsilon:
+                        agent ={
+                            "type": "Q learning",
+                            "alpha": a,
+                            "gamma": g,
+                            "epsilon": e,
+                            "n_games": n_games,
+                            "n_episodes": n_episodes
+                        }
+                        agent_list.append(agent)
+                        Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
+                        Item_Widget = QLearningItem(agent)
+                        Item.setSizeHint(Item_Widget.sizeHint())
+                        self.agent_list_recap.addItem(Item)
+                        self.agent_list_recap.setItemWidget(Item, Item_Widget)
 
     @pyqtSlot()
     def add_nss_to_graph_clicked(self):
 
-        agent ={
-            "type": "n-step SARSA",
-            "alpha": self.nss_alpha.text(),
-            "gamma": self.nss_gamma.text(),
-            "epsilon": self.nss_epsilon.text(),
-            "n_games": self.nss_n_games.text(),
-            "n_episodes": self.nss_n_episodes.text(),
-            "n_step": self.nss_n_step.text()
-        }
-        agent_list.append(agent)
-        Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
-        Item_Widget = NStepSarsaItem(agent)
-        Item.setSizeHint(Item_Widget.sizeHint())
-        self.agent_list_recap.addItem(Item)
-        self.agent_list_recap.setItemWidget(Item, Item_Widget)
+        env_name = self.enviroment_name_recap.text()
+        tests_moment = self.tests_moment_recap.text()
+        n_games = self.nss_n_games.text()
+        n_episodes = self.nss_n_episodes.text()
+        alpha = [self.nss_alpha.text()]
+        gamma = [self.nss_gamma.text()]
+        epsilon = [self.nss_epsilon.text()]
+        n_step = [self.nss_n_step.text()]
+
+
+        if alpha[0] == "all":
+            alpha = get_all_parameter("n-step SARSA", "alpha", env_name, tests_moment)
+
+        elif gamma[0] == "all":
+            gamma = get_all_parameter("n-step SARSA", "gamma", env_name, tests_moment)
+
+        elif epsilon[0] == "all":
+            epsilon = get_all_parameter("n-step SARSA", "epsilon", env_name, tests_moment)
+
+        elif n_step[0] == "all":
+            n_step = get_all_parameter("n-step SARSA", "N-step", env_name, tests_moment)
+
+        for a in alpha:
+            for g in gamma:
+                for e in epsilon:
+                    for n in n_step:
+                        agent ={
+                            "type": "n-step SARSA",
+                            "alpha": a,
+                            "gamma": g,
+                            "epsilon": e,
+                            "n_games": n_games,
+                            "n_episodes": n_episodes,
+                            "n_step": n
+                        }
+                        agent_list.append(agent)
+                        Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
+                        Item_Widget = NStepSarsaItem(agent)
+                        Item.setSizeHint(Item_Widget.sizeHint())
+                        self.agent_list_recap.addItem(Item)
+                        self.agent_list_recap.setItemWidget(Item, Item_Widget)
+
+
 
 
     @pyqtSlot()
@@ -166,7 +277,6 @@ class AppWindow(QDialog):
         for selectedItem in self.agent_list_recap.selectedItems():
             del agent_list[self.agent_list_recap.row(selectedItem)]
             self.agent_list_recap.takeItem(self.agent_list_recap.row(selectedItem))
-
 
 
     @pyqtSlot()
@@ -190,43 +300,53 @@ class AppWindow(QDialog):
 
                 plt.figure(test_type)
                 plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
-
+                plt.ylabel(test_type)
                 '''
                 HOW TO SHOW RESULT HERE
                 '''
                 if self.how_result.currentText() == "All results":
 
                     for i_test_agent in range(len(tests_list)):
-                        plt.plot(tests_list[i_test_agent][test_type])
-                        legends[test_type].append(create_legend_string(agent))
+                        plt.plot(tests_list[i_test_agent][test_type], label=create_legend_string(agent))
+                        plt.legend(loc='upper left')
 
 
                 elif self.how_result.currentText() == "Average results":
 
-                    sum = []
+                    average = []
                     for _ in tests_list[0][test_type]:
-                        sum.append(0)
+                        average.append(0)
 
                     for test_of_i_agent in tests_list:
                         for i in range(len(test_of_i_agent[test_type])):
-                            sum[i] += test_of_i_agent[test_type][i]
+                            average[i] += test_of_i_agent[test_type][i]
 
-                    for i in range(len(sum)):
-                        sum[i] = sum[i] / len(tests_list)
+                    for i in range(len(average)):
+                        average[i] = average[i] / len(tests_list)
 
-                    plt.plot(sum)
-                    legends[test_type].append(create_legend_string(agent))
-
-
+                    plt.plot(average, label=create_legend_string(agent))
+                    plt.legend(loc='upper left')
 
 
+                    plt.figure("Standard deviation of " + test_type)
+                    plt.ylabel(test_type)
+                    plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
 
-                plt.ylabel(test_type)
-                plt.legend(legends[test_type], loc='upper left')
+                    standard_deviation = []
+                    for _ in tests_list[0][test_type]:
+                        standard_deviation.append(0)
+
+                    for test_of_i_agent in tests_list:
+                        for i in range(len(test_of_i_agent[test_type])):
+                            standard_deviation[i] += pow(test_of_i_agent[test_type][i] - average[i], 2)
+
+                    for i in range(len(standard_deviation)):
+                        standard_deviation[i] = sqrt(standard_deviation[i] / len(tests_list))
+
+                    plt.plot(standard_deviation, label=create_legend_string(agent))
+                    plt.legend(loc='upper left')
 
         plt.show()
-
-
 
 
 
@@ -265,6 +385,21 @@ def create_legend_string(agent):
         return "n-step SARSA, n-step=" + str(agent["n_step"]) + ",alpha=" + str(agent["alpha"]) + ", gamma=" + str(agent["gamma"]) + ", epsilon=" + str(agent["epsilon"]) + ", n_games=" + str(agent["n_games"]) + ", n_episodes=" + str(agent["n_episodes"])
 
 
+def get_all_parameter(agent_type, parameter, env_name, tests_moment_name):
+
+    path = "docs/" + env_name + "/" + tests_moment_name + "/" + agent_type
+
+    parameter_set = set()
+    for file in os.listdir(path):
+        s = re.search(parameter + "= (\d+\.\d+)", file)
+        if s == None: #For DP Agent
+            s = re.search(parameter + "= (1e-\d+)", file)
+        if s == None: #for NSS Agent
+            s = re.search(parameter + "= (\d+)", file)
+
+        parameter_set.add(s.group(1))
+
+    return parameter_set
 
 
 if __name__ == '__main__':
