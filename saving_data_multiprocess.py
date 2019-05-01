@@ -159,7 +159,7 @@ def automatic_agent_generation(agent_type, n_games, n_episodes):
         n_step = [2, 4, 8, 12, 16, 20]
         alpha = [0.1, 0.2, 0.3, 0.4]
         gamma = [1.0, 0.9, 0.8, 0.7, 0.5]
-        epsilon = [0.1]
+        epsilon = [0.05]
         #epsilon = [0.01, 0.05, 0.1, 0.2]
 
         combination = list(itertools.product(n_step, alpha, gamma, epsilon))
@@ -299,7 +299,9 @@ if __name__ == '__main__':
         n_agents = int(input("Insert the number of agents: "))
 
         for i in range(n_agents):
-            agents_list.append(input_for_agent(i, tests_moment))
+            agent = input_for_agent(i, tests_moment)
+            for j in range(10):
+                agents_list.append(agent)
 
         '''
         agents_list.append({'type': 'Q learning', 'alpha': 0.3, 'gamma': 1.0, 'epsilon': 0.1, 'n_games': 100, 'n_episodes': 100})
