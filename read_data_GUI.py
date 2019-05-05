@@ -56,6 +56,19 @@ class NStepSarsaItem(QWidget):
         self.n_games.setText(agent["n_games"])
         self.n_episodes.setText(agent["n_episodes"])
 
+class NStepSarsaApproximateItem(QWidget):
+    def __init__ (self, agent):
+        super(NStepSarsaApproximateItem, self).__init__()
+        loadUi("GUI/NStepSarsaApproximateItem.ui", self)
+
+        self.type.setText("n-step SARSA approximate")
+        self.n_step.setText(agent["n_step"])
+        self.alpha.setText(agent["alpha"])
+        self.gamma.setText(agent["gamma"])
+        self.epsilon.setText(agent["epsilon"])
+        self.n_games.setText(agent["n_games"])
+        self.n_episodes.setText(agent["n_episodes"])
+
 
 
 class AppWindow(QDialog):
@@ -71,6 +84,7 @@ class AppWindow(QDialog):
         self.add_dp_to_graph.clicked.connect(self.add_dp_to_graph_clicked)
         self.add_ql_to_graph.clicked.connect(self.add_ql_to_graph_clicked)
         self.add_nss_to_graph.clicked.connect(self.add_nss_to_graph_clicked)
+        self.add_nssa_to_graph.clicked.connect(self.add_nssa_to_graph_clicked)
 
 
 
@@ -269,6 +283,51 @@ class AppWindow(QDialog):
                         self.agent_list_recap.setItemWidget(Item, Item_Widget)
 
 
+    @pyqtSlot()
+    def add_nssa_to_graph_clicked(self):
+
+        env_name = self.enviroment_name_recap.text()
+        tests_moment = self.tests_moment_recap.text()
+        n_games = self.nssa_n_games.text()
+        n_episodes = self.nssa_n_episodes.text()
+        alpha = [self.nssa_alpha.text()]
+        gamma = [self.nssa_gamma.text()]
+        epsilon = [self.nssa_epsilon.text()]
+        n_step = [self.nssa_n_step.text()]
+
+
+        if alpha[0] == "all":
+            alpha = get_all_parameter("n-step SARSA approximate", "alpha", env_name, tests_moment)
+
+        elif gamma[0] == "all":
+            gamma = get_all_parameter("n-step SARSA approximate", "gamma", env_name, tests_moment)
+
+        elif epsilon[0] == "all":
+            epsilon = get_all_parameter("n-step SARSA approximate", "epsilon", env_name, tests_moment)
+
+        elif n_step[0] == "all":
+            n_step = get_all_parameter("n-step SARSA approximate", "N-step", env_name, tests_moment)
+
+        for a in alpha:
+            for g in gamma:
+                for e in epsilon:
+                    for n in n_step:
+                        agent ={
+                            "type": "n-step SARSA approximate",
+                            "alpha": a,
+                            "gamma": g,
+                            "epsilon": e,
+                            "n_games": n_games,
+                            "n_episodes": n_episodes,
+                            "n_step": n
+                        }
+                        agent_list.append(agent)
+                        Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
+                        Item_Widget = NStepSarsaApproximateItem(agent)
+                        Item.setSizeHint(Item_Widget.sizeHint())
+                        self.agent_list_recap.addItem(Item)
+                        self.agent_list_recap.setItemWidget(Item, Item_Widget)
+
 
 
     @pyqtSlot()
@@ -367,22 +426,28 @@ def create_agent_params_string(agent):
     elif agent["type"] == "n-step SARSA" or agent["type"] == "NSS":
         return "N-step= " + str(agent["n_step"]) + ", alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
+    elif agent["type"] == "n-step SARSA approximate" or agent["type"] == "NSSA":
+        return "N-step= " + str(agent["n_step"]) + ",alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
+
 
 def create_legend_string(agent):
 
     string = ""
 
     if agent["type"] == "MonteCarlo" or agent["type"] == "MC":
-        return "MonteCarlo, epsilon=" + str(agent["epsilon"]) + ", gamma=" + str(agent["gamma"]) + ", n_games=" + str(agent["n_games"]) + ", n_episodes=" + str(agent["n_episodes"])
+        return "MonteCarlo, epsilon= " + str(agent["epsilon"]) + ", gamma= " + str(agent["gamma"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
     elif agent["type"] == "Dynamic programming" or agent["type"] == "DP":
-        return "Dynamic programming, gamma=" + str(agent["gamma"]) + ", theta=" + str(agent["theta"])
+        return "Dynamic programming, gamma= " + str(agent["gamma"]) + ", theta= " + str(agent["theta"])
 
     elif agent["type"] == "Q learning" or agent["type"] == "QL":
-        return "Q learning, alpha=" + str(agent["alpha"]) + ", gamma=" + str(agent["gamma"]) + ", epsilon=" + str(agent["epsilon"]) + ", n_games=" + str(agent["n_games"]) + ", n_episodes=" + str(agent["n_episodes"])
+        return "Q learning, alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
     elif agent["type"] == "n-step SARSA" or agent["type"] == "NSS":
-        return "n-step SARSA, n-step=" + str(agent["n_step"]) + ",alpha=" + str(agent["alpha"]) + ", gamma=" + str(agent["gamma"]) + ", epsilon=" + str(agent["epsilon"]) + ", n_games=" + str(agent["n_games"]) + ", n_episodes=" + str(agent["n_episodes"])
+        return "n-step SARSA, n-step= " + str(agent["n_step"]) + ",alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
+
+    elif agent["type"] == "n-step SARSA approximate" or agent["type"] == "NSSA":
+        return "n-step SARSA approximate, n-step= " + str(agent["n_step"]) + ",alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
 
 def get_all_parameter(agent_type, parameter, env_name, tests_moment_name):

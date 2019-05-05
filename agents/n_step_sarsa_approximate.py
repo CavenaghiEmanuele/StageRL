@@ -25,7 +25,7 @@ import enviroment_choose
 
 
 
-def run_agent(env, n_games, n_episodes, alpha=0.1, gamma=0.6, epsilon=0.1, n_step=10):
+def run_agent(env, tests_moment, n_games, n_episodes, alpha=0.1, gamma=0.6, epsilon=0.1, n_step=10):
 
     global _ENVIROMENT_CLASS
     global _ENV
@@ -36,6 +36,7 @@ def run_agent(env, n_games, n_episodes, alpha=0.1, gamma=0.6, epsilon=0.1, n_ste
     global _EPSILON
     global _N_STEP
     global _ESTIMATOR
+    global _TESTS_MOMENT
 
 
     _ENVIROMENT_CLASS = enviroment_choose.env_choose(env)
@@ -47,14 +48,21 @@ def run_agent(env, n_games, n_episodes, alpha=0.1, gamma=0.6, epsilon=0.1, n_ste
     _EPSILON = epsilon
     _N_STEP = n_step
     _ESTIMATOR = _ENVIROMENT_CLASS.QEstimator(env=_ENV, step_size=_ALPHA)
+    _TESTS_MOMENT = tests_moment
 
 
+    results = n_step_sarsa_approximate()
 
+    tests_result_dict = {}
 
-    start_time = timeit.default_timer()
-    n_step_sarsa_approximate()
-    elapsed_time = timeit.default_timer() - start_time
-    print('{} episodes completed in {:.2f}s'.format(_N_GAMES, elapsed_time))
+    for type_test in _TYPE_TEST_LIST:
+        tests_result_dict.update({type_test: []})
+
+    for type_test in tests_result_dict:
+        for test in results["tests_result"]:
+            tests_result_dict[type_test].append(test[type_test])
+
+    return {"agent_info": results["agent_info"], "tests_result": tests_result_dict}
 
 
 
@@ -63,6 +71,16 @@ def run_agent(env, n_games, n_episodes, alpha=0.1, gamma=0.6, epsilon=0.1, n_ste
 def n_step_sarsa_approximate():
 
     global _POLICY
+    global _TYPE_TEST_LIST
+    global _TESTS_RESULT
+
+    _TESTS_RESULT = []
+    #Ottengo dall'ambiente i tipi di test che mi puo' restituire
+    _TYPE_TEST_LIST = _ENVIROMENT_CLASS.type_test()
+    # Create epsilon-greedy policy
+    _POLICY = make_epsilon_greedy_policy()
+
+
 
 
     '''
@@ -72,6 +90,26 @@ def n_step_sarsa_approximate():
         for _ in range(_N_EPISODES):
             training()
 
+        if (i_game % 10) == 0 and _TESTS_MOMENT == "ten_perc":
+            testing()
+
+        if _TESTS_MOMENT == "on_run":
+            testing()
+
+
+    '''
+    TESTING if type_test is final
+    '''
+    if _TESTS_MOMENT == "final":
+        for _ in range(100):
+            testing()
+
+
+
+
+
+    agent_info = {"policy": _POLICY}
+    return {"agent_info": agent_info, "tests_result": _TESTS_RESULT}
 
 
 
@@ -81,16 +119,10 @@ def n_step_sarsa_approximate():
 
 def training():
 
-    """
-    n-step semi-gradient Sarsa algorithm
-    for finding optimal q and pi via Linear
-    FA with n-step TD updates.
-    """
-    # Create epsilon-greedy policy
-    _POLICY = make_epsilon_greedy_policy()
-
     # Reset the environment and pick the first action
     state = _ENVIROMENT_CLASS.reset_env_approximate(_ENV)
+
+    # Take next action
     action_probs = _POLICY(state)
     action = np.random.choice(np.arange(len(action_probs)), p=action_probs)
 
@@ -122,15 +154,15 @@ def training():
         update_time = t + 1 - _N_STEP  # Specifies state to be updated
         if update_time >= 0:
             # Build target
-            target = 0
+            g = 0
             for i in range(update_time + 1, min(T, update_time + _N_STEP) + 1):
-                target += np.power(_GAMMA, i - update_time - 1) * rewards[i]
+                g += np.power(_GAMMA, i - update_time - 1) * rewards[i]
             if update_time + _N_STEP < T:
                 q_values_next = _ESTIMATOR.predict(states[update_time + _N_STEP])
-                target += q_values_next[actions[update_time + _N_STEP]]
+                g += q_values_next[actions[update_time + _N_STEP]]
 
-            # Update step
-            _ESTIMATOR.update(states[update_time], actions[update_time], target)
+            # Update policy
+            _ESTIMATOR.update(states[update_time], actions[update_time], g)
 
         if update_time == T - 1:
             break
@@ -138,9 +170,42 @@ def training():
         state = next_state
         action = next_action
 
-    ret = np.sum(rewards)
 
-    return t, ret
+def testing():
+
+    n_test = 10
+    test_iteration_i = {}
+    for type_test in _TYPE_TEST_LIST:
+        test_iteration_i.update({type_test: 0})
+
+    for _ in range(n_test):
+
+
+        state = _ENVIROMENT_CLASS.reset_env_approximate(_ENV)
+        done = False
+
+
+        while not done:
+
+            # Take next action
+            action_probs = _POLICY(state)
+            action = np.random.choice(np.arange(len(action_probs)), p=action_probs)
+            '''
+            Scegliere sempre e solo l'azione migliore puo' portare l'agente a restare
+            bloccato, con una scelta randomica paghiamo in % di vittorie ma
+            evitiamo il problema
+            '''
+            test_dict = _ENVIROMENT_CLASS.test_policy_approximate(_ENV, action)
+            state = test_dict["env_info"]["next_state"]
+            done = test_dict["env_info"]["done"]
+
+            for type_test in _TYPE_TEST_LIST:
+                test_iteration_i[type_test] += test_dict[type_test]
+
+    for type_test in _TYPE_TEST_LIST:
+        test_iteration_i[type_test] = test_iteration_i[type_test] / n_test
+
+    _TESTS_RESULT.append(test_iteration_i)
 
 
 

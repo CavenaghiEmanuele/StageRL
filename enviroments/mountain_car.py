@@ -31,9 +31,19 @@ def test_policy(env, action):
         "info": info
         }
 
-    if done and reward == 1:
-        return {"env_info": env_info, "average": reward}
+    return {"env_info": env_info, "average": reward}
 
+
+def test_policy_approximate(env, action):
+
+    next_state, reward, done, info = env.step(action)
+
+    env_info = {
+        "next_state": next_state,
+        "reward": reward,
+        "done": done,
+        "info": info
+        }
 
     return {"env_info": env_info, "average": reward}
 

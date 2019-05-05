@@ -57,7 +57,7 @@ def n_step_sarsa():
             _ENVIROMENT_CLASS.number_actions(_ENV)])
 
     _TESTS_RESULT = []
-    #Ottengo dall'ambiente i tipi di test che mi puO' restituire
+    #Ottengo dall'ambiente i tipi di test che mi puo' restituire
     _TYPE_TEST_LIST = _ENVIROMENT_CLASS.type_test()
 
 
@@ -91,7 +91,7 @@ def training():
     # Reset the environment and pick the first action
     state = _ENVIROMENT_CLASS.reset_env(_ENV)
 
-    # Take next step
+    # Take next action
     n = random.uniform(0, sum(_POLICY[state]))
     top_range = 0
     action_name = -1
@@ -102,7 +102,7 @@ def training():
             action = action_name
             break
 
-
+    # Set up trackers
     states = [state]
     actions = [action]
     rewards = [0.0]

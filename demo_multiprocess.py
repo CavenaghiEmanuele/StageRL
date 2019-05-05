@@ -9,10 +9,12 @@ from multiprocessing import Pool
 import os
 
 
-import agents.monte_carlo as MCA
-import agents.dynamic_programming as DPA
-import agents.q_learning as QLA
-import agents.n_step_sarsa as NSSA
+import agents.monte_carlo as MC
+import agents.dynamic_programming as DP
+import agents.q_learning as QL
+import agents.n_step_sarsa as NSS
+import agents.n_step_sarsa_approximate as NSSA
+
 
 
 
@@ -85,6 +87,24 @@ def input_for_agent(n_agent):
             "n_step": n_step
         }
 
+    elif agent_type == "n-step SARSA approximate" or agent_type == "NSSA":
+        n_step = int(input("Insert the number of step for the agent: "))
+        alpha = float(input("Insert the parameter alpha (learning rate): "))
+        gamma = float(input("Insert the parameter gamma: "))
+        epsilon = float(input("Insert the parameter epsilon: "))
+        n_games = int(input("Insert the number of games: "))
+        n_episodes = int(input("Insert the number of episodes for each game: "))
+
+        agent ={
+            "type": agent_type,
+            "alpha": alpha,
+            "gamma": gamma,
+            "epsilon": epsilon,
+            "n_games": n_games,
+            "n_episodes": n_episodes,
+            "n_step": n_step
+        }
+
     return agent
 
 
@@ -110,23 +130,26 @@ def create_legend_string(agent):
     string = ""
 
     if agent["type"] == "MonteCarlo" or agent["type"] == "MC":
-        return "MonteCarlo, epsilon=" + str(agent["epsilon"]) + ", gamma=" + str(agent["gamma"]) + ", n_games=" + str(agent["n_games"]) + ", n_episodes=" + str(agent["n_episodes"])
+        return "MonteCarlo, epsilon= " + str(agent["epsilon"]) + ", gamma= " + str(agent["gamma"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
     elif agent["type"] == "Dynamic programming" or agent["type"] == "DP":
-        return "Dynamic programming, gamma=" + str(agent["gamma"]) + ", theta=" + str(agent["theta"])
+        return "Dynamic programming, gamma= " + str(agent["gamma"]) + ", theta= " + str(agent["theta"])
 
     elif agent["type"] == "Q learning" or agent["type"] == "QL":
-        return "Q learning, alpha=" + str(agent["alpha"]) + ", gamma=" + str(agent["gamma"]) + ", epsilon=" + str(agent["epsilon"]) + ", n_games=" + str(agent["n_games"]) + ", n_episodes=" + str(agent["n_episodes"])
+        return "Q learning, alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
     elif agent["type"] == "n-step SARSA" or agent["type"] == "NSS":
-        return "n-step SARSA, n-step=" + str(agent["n_step"]) + ",alpha=" + str(agent["alpha"]) + ", gamma=" + str(agent["gamma"]) + ", epsilon=" + str(agent["epsilon"]) + ", n_games=" + str(agent["n_games"]) + ", n_episodes=" + str(agent["n_episodes"])
+        return "n-step SARSA, n-step= " + str(agent["n_step"]) + ",alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
+
+    elif agent["type"] == "n-step SARSA approximate" or agent["type"] == "NSSA":
+        return "n-step SARSA approximate, n-step= " + str(agent["n_step"]) + ",alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
 
 
 def run_agent(agent_dict):
     if agent_dict["type"] == "MonteCarlo" or agent_dict["type"] == "MC":
 
-        dict_result = MCA.run_agent(
+        dict_result = MC.run_agent(
             enviroment,
             tests_moment,
             agent_dict["n_games"],
@@ -137,7 +160,7 @@ def run_agent(agent_dict):
 
     elif agent_dict["type"] == "Dynamic programming" or agent_dict["type"] == "DP":
 
-        dict_result = DPA.run_agent(
+        dict_result = DP.run_agent(
             enviroment,
             tests_moment,
             gamma = agent_dict["gamma"],
@@ -146,7 +169,7 @@ def run_agent(agent_dict):
 
     elif agent_dict["type"] == "Q learning" or agent_dict["type"] == "QL":
 
-        dict_result = QLA.run_agent(
+        dict_result = QL.run_agent(
             enviroment,
             tests_moment,
             agent_dict["n_games"],
@@ -158,6 +181,19 @@ def run_agent(agent_dict):
         )
 
     elif agent_dict["type"] == "n-step SARSA" or agent_dict["type"] == "NSS":
+
+        dict_result = NSS.run_agent(
+            enviroment,
+            tests_moment,
+            agent_dict["n_games"],
+            agent_dict["n_episodes"],
+            alpha = agent_dict["alpha"],
+            gamma = agent_dict["gamma"],
+            epsilon = agent_dict["epsilon"],
+            n_step= agent_dict["n_step"]
+        )
+
+    elif agent_dict["type"] == "n-step SARSA approximate" or agent_dict["type"] == "NSSA":
 
         dict_result = NSSA.run_agent(
             enviroment,
