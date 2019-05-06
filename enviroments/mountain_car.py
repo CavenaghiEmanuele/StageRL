@@ -79,6 +79,8 @@ def reset_env(env):
 def reset_env_approximate(env):
     return env.reset()
 
+def probability(env):
+    return None
 
 
 class QEstimator():

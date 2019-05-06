@@ -29,4 +29,12 @@ def env_choose(env):
 
         return importlib.import_module("mountain_car")
 
+    elif  env_name == "Acrobot-v1":
+
+        return importlib.import_module("acrobot")
+
+    elif  env_name == "CartPole-v1":
+
+        return importlib.import_module("cartpole")
+
     return None

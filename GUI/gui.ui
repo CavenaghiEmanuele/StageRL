@@ -40,7 +40,17 @@
          </item>
          <item>
           <property name="text">
+           <string>Acrobot-v1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>Blackjack-v0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>CartPole-v1</string>
           </property>
          </item>
          <item>
@@ -148,7 +158,7 @@
         <bool>false</bool>
        </property>
        <property name="currentIndex">
-        <number>4</number>
+        <number>5</number>
        </property>
        <widget class="QWidget" name="monte_carlo">
         <attribute name="title">
@@ -567,6 +577,126 @@
          </item>
          <item>
           <widget class="QPushButton" name="add_nssa_to_graph">
+           <property name="text">
+            <string>Add to graph</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="sarsa_lambda">
+        <attribute name="title">
+         <string>SARSA lambda</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_9">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_31">
+           <item>
+            <widget class="QLabel" name="label_28">
+             <property name="text">
+              <string>Number of steps</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="sl_n_step"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_36">
+           <item>
+            <widget class="QLabel" name="label_29">
+             <property name="text">
+              <string>Parameter alpha</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="sl_alpha"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_35">
+           <item>
+            <widget class="QLabel" name="label_30">
+             <property name="text">
+              <string>Parameter gamma</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="sl_gamma"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_34">
+           <item>
+            <widget class="QLabel" name="label_35">
+             <property name="text">
+              <string>Parameter epsilon</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="sl_epsilon"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_33">
+           <item>
+            <widget class="QLabel" name="label_34">
+             <property name="text">
+              <string>Parameter lambda</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="sl_lambda"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_32">
+           <item>
+            <widget class="QLabel" name="label_33">
+             <property name="text">
+              <string>Number of games</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="sl_n_games">
+             <property name="text">
+              <string>100</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_30">
+           <item>
+            <widget class="QLabel" name="label_31">
+             <property name="text">
+              <string>Number of episodes for game</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="sl_n_episodes">
+             <property name="text">
+              <string>10</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QPushButton" name="add_sl_to_graph">
            <property name="text">
             <string>Add to graph</string>
            </property>

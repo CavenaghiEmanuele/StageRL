@@ -1,20 +1,14 @@
-import gym
-import numpy as np
-import matplotlib.pyplot as plt
-import operator
-from IPython.display import clear_output
-from time import sleep
-import itertools
-from multiprocessing import Pool
 import os
-
+from multiprocessing import Pool
+import matplotlib.pyplot as plt
+import gym
 
 import agents.monte_carlo as MC
 import agents.dynamic_programming as DP
 import agents.q_learning as QL
 import agents.n_step_sarsa as NSS
 import agents.n_step_sarsa_approximate as NSSA
-
+import agents.sarsa_lambda as SL
 
 
 
@@ -35,7 +29,7 @@ def input_for_agent(n_agent):
         epsilon = float(input("Insert the parameter epsilon: "))
         gamma = float(input("Insert the parameter gamma: "))
 
-        agent ={
+        agent = {
             "type": agent_type,
             "n_games": n_games,
             "n_episodes": n_episodes,
@@ -47,7 +41,7 @@ def input_for_agent(n_agent):
         gamma = float(input("Insert the parameter gamma: "))
         theta = float(input("Insert the parameter theta: "))
 
-        agent ={
+        agent = {
             "type": agent_type,
             "gamma": gamma,
             "theta": theta
@@ -60,7 +54,7 @@ def input_for_agent(n_agent):
         n_games = int(input("Insert the number of games: "))
         n_episodes = int(input("Insert the number of episodes for each game: "))
 
-        agent ={
+        agent = {
             "type": agent_type,
             "alpha": alpha,
             "gamma": gamma,
@@ -77,7 +71,7 @@ def input_for_agent(n_agent):
         n_games = int(input("Insert the number of games: "))
         n_episodes = int(input("Insert the number of episodes for each game: "))
 
-        agent ={
+        agent = {
             "type": agent_type,
             "alpha": alpha,
             "gamma": gamma,
@@ -95,11 +89,31 @@ def input_for_agent(n_agent):
         n_games = int(input("Insert the number of games: "))
         n_episodes = int(input("Insert the number of episodes for each game: "))
 
-        agent ={
+        agent = {
             "type": agent_type,
             "alpha": alpha,
             "gamma": gamma,
             "epsilon": epsilon,
+            "n_games": n_games,
+            "n_episodes": n_episodes,
+            "n_step": n_step
+        }
+
+    elif agent_type == "SARSA lambda" or agent_type == "SL":
+        n_step = int(input("Insert the number of step for the agent: "))
+        alpha = float(input("Insert the parameter alpha (learning rate): "))
+        gamma = float(input("Insert the parameter gamma: "))
+        epsilon = float(input("Insert the parameter epsilon: "))
+        lambd = float(input("Insert the parameter lambda: "))
+        n_games = int(input("Insert the number of games: "))
+        n_episodes = int(input("Insert the number of episodes for each game: "))
+
+        agent = {
+            "type": agent_type,
+            "alpha": alpha,
+            "gamma": gamma,
+            "epsilon": epsilon,
+            "lambd": lambd,
             "n_games": n_games,
             "n_episodes": n_episodes,
             "n_step": n_step
@@ -110,39 +124,58 @@ def input_for_agent(n_agent):
 
 def create_custom_enviroment():
 
-        gym.register(
-            id='FrozenLakeNotSlippery8x8-v0',
-            entry_point='gym.envs.toy_text:FrozenLakeEnv',
-            kwargs={'map_name' : '8x8', 'is_slippery': False},
-            max_episode_steps=1000,
-        )
+    gym.register(
+        id='FrozenLakeNotSlippery8x8-v0',
+        entry_point='gym.envs.toy_text:FrozenLakeEnv',
+        kwargs={'map_name' : '8x8', 'is_slippery': False},
+        max_episode_steps=1000,
+    )
 
-        gym.register(
-            id='FrozenLakeNotSlippery4x4-v0',
-            entry_point='gym.envs.toy_text:FrozenLakeEnv',
-            kwargs={'map_name' : '4x4', 'is_slippery': False},
-            max_episode_steps=1000,
-        )
+    gym.register(
+        id='FrozenLakeNotSlippery4x4-v0',
+        entry_point='gym.envs.toy_text:FrozenLakeEnv',
+        kwargs={'map_name' : '4x4', 'is_slippery': False},
+        max_episode_steps=1000,
+    )
 
 
 def create_legend_string(agent):
 
-    string = ""
-
     if agent["type"] == "MonteCarlo" or agent["type"] == "MC":
-        return "MonteCarlo, epsilon= " + str(agent["epsilon"]) + ", gamma= " + str(agent["gamma"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
+        return "MonteCarlo, epsilon= " + str(agent["epsilon"]) + ", gamma= " + \
+            str(agent["gamma"]) + ", n_games= " + str(agent["n_games"]) + \
+            ", n_episodes= " + str(agent["n_episodes"])
 
     elif agent["type"] == "Dynamic programming" or agent["type"] == "DP":
-        return "Dynamic programming, gamma= " + str(agent["gamma"]) + ", theta= " + str(agent["theta"])
+        return "Dynamic programming, gamma= " + str(agent["gamma"]) + \
+            ", theta= " + str(agent["theta"])
 
     elif agent["type"] == "Q learning" or agent["type"] == "QL":
-        return "Q learning, alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
+        return "Q learning, alpha= " + str(agent["alpha"]) + ", gamma= " + \
+            str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + \
+            ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + \
+            str(agent["n_episodes"])
 
     elif agent["type"] == "n-step SARSA" or agent["type"] == "NSS":
-        return "n-step SARSA, n-step= " + str(agent["n_step"]) + ",alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
+        return "n-step SARSA, n-step= " + str(agent["n_step"]) + ",alpha= " + \
+        str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " \
+        + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + \
+        ", n_episodes= " + str(agent["n_episodes"])
 
     elif agent["type"] == "n-step SARSA approximate" or agent["type"] == "NSSA":
-        return "n-step SARSA approximate, n-step= " + str(agent["n_step"]) + ",alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
+        return "n-step SARSA approximate, n-step= " + str(agent["n_step"]) + \
+            ",alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + \
+            ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + \
+            str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
+
+    elif agent["type"] == "SARSA lambda" or agent["type"] == "SL":
+        return "SARSA lambda, n-step= " + str(agent["n_step"]) + \
+            ",alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) + \
+            ", epsilon= " + str(agent["epsilon"]) + ", lambda= " + \
+            str(agent["lambd"]) + ", n_games= " + str(agent["n_games"]) + \
+            ", n_episodes= " + str(agent["n_episodes"])
+
+    return None
 
 
 
@@ -154,8 +187,8 @@ def run_agent(agent_dict):
             tests_moment,
             agent_dict["n_games"],
             agent_dict["n_episodes"],
-            epsilon = agent_dict["epsilon"],
-            gamma = agent_dict["gamma"]
+            epsilon=agent_dict["epsilon"],
+            gamma=agent_dict["gamma"]
         )
 
     elif agent_dict["type"] == "Dynamic programming" or agent_dict["type"] == "DP":
@@ -163,8 +196,8 @@ def run_agent(agent_dict):
         dict_result = DP.run_agent(
             enviroment,
             tests_moment,
-            gamma = agent_dict["gamma"],
-            theta = agent_dict["theta"]
+            gamma=agent_dict["gamma"],
+            theta=agent_dict["theta"]
         )
 
     elif agent_dict["type"] == "Q learning" or agent_dict["type"] == "QL":
@@ -174,9 +207,9 @@ def run_agent(agent_dict):
             tests_moment,
             agent_dict["n_games"],
             agent_dict["n_episodes"],
-            alpha = agent_dict["alpha"],
-            gamma = agent_dict["gamma"],
-            epsilon = agent_dict["epsilon"]
+            alpha=agent_dict["alpha"],
+            gamma=agent_dict["gamma"],
+            epsilon=agent_dict["epsilon"]
 
         )
 
@@ -187,10 +220,10 @@ def run_agent(agent_dict):
             tests_moment,
             agent_dict["n_games"],
             agent_dict["n_episodes"],
-            alpha = agent_dict["alpha"],
-            gamma = agent_dict["gamma"],
-            epsilon = agent_dict["epsilon"],
-            n_step= agent_dict["n_step"]
+            alpha=agent_dict["alpha"],
+            gamma=agent_dict["gamma"],
+            epsilon=agent_dict["epsilon"],
+            n_step=agent_dict["n_step"]
         )
 
     elif agent_dict["type"] == "n-step SARSA approximate" or agent_dict["type"] == "NSSA":
@@ -200,10 +233,24 @@ def run_agent(agent_dict):
             tests_moment,
             agent_dict["n_games"],
             agent_dict["n_episodes"],
-            alpha = agent_dict["alpha"],
-            gamma = agent_dict["gamma"],
-            epsilon = agent_dict["epsilon"],
-            n_step= agent_dict["n_step"]
+            alpha=agent_dict["alpha"],
+            gamma=agent_dict["gamma"],
+            epsilon=agent_dict["epsilon"],
+            n_step=agent_dict["n_step"]
+        )
+
+    elif agent_dict["type"] == "SARSA lambda" or agent_dict["type"] == "SL":
+
+        dict_result = SL.run_agent(
+            enviroment,
+            tests_moment,
+            agent_dict["n_games"],
+            agent_dict["n_episodes"],
+            alpha=agent_dict["alpha"],
+            gamma=agent_dict["gamma"],
+            epsilon=agent_dict["epsilon"],
+            lambd=agent_dict["lambd"],
+            n_step=agent_dict["n_step"]
         )
 
     test_result = dict_result["tests_result"]
@@ -220,16 +267,12 @@ if __name__ == '__main__':
 
     enviroment_name = input("Insert the enviroment name: ")
     enviroment = gym.make(enviroment_name) #Creazione ambiente
-
     tests_moment = input("Select the test type (final, on_run, ten_perc): ")
-
     n_agents = int(input("Insert the number of agents: "))
-
 
 
     for i in range(n_agents):
         agents_list.append(input_for_agent(i))
-
 
 
     pool = Pool(len(os.sched_getaffinity(0))) #creo un pool di processi

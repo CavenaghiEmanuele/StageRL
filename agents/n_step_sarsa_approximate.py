@@ -1,28 +1,9 @@
-import gym
-import itertools
-import matplotlib
-import numpy as np
-import pandas as pd
 import sys
-import time
-import timeit
-from collections import namedtuple
-import os
-import glob
-from tqdm import tqdm
-
-from matplotlib import pyplot as plt
-from matplotlib import cm
-matplotlib.style.use('ggplot')
-
-import io
-import base64
-from IPython.display import HTML
-from agents.tiles import *
-sys.path.insert(0, 'enviroments')
-
+import itertools
+import numpy as np
 import enviroment_choose
-
+from tqdm import tqdm
+sys.path.insert(0, 'enviroments')
 
 
 def run_agent(env, tests_moment, n_games, n_episodes, alpha=0.1, gamma=0.6, epsilon=0.1, n_step=10):
@@ -65,9 +46,6 @@ def run_agent(env, tests_moment, n_games, n_episodes, alpha=0.1, gamma=0.6, epsi
     return {"agent_info": results["agent_info"], "tests_result": tests_result_dict}
 
 
-
-
-
 def n_step_sarsa_approximate():
 
     global _POLICY
@@ -79,9 +57,6 @@ def n_step_sarsa_approximate():
     _TYPE_TEST_LIST = _ENVIROMENT_CLASS.type_test()
     # Create epsilon-greedy policy
     _POLICY = make_epsilon_greedy_policy()
-
-
-
 
     '''
     TRAINING
@@ -104,17 +79,9 @@ def n_step_sarsa_approximate():
         for _ in range(100):
             testing()
 
-
-
-
-
+    print(_POLICY)
     agent_info = {"policy": _POLICY}
     return {"agent_info": agent_info, "tests_result": _TESTS_RESULT}
-
-
-
-
-
 
 
 def training():
@@ -139,6 +106,7 @@ def training():
             next_state, reward, done, _ = _ENVIROMENT_CLASS.run_game_approximate(_ENV, action)
             states.append(next_state)
             rewards.append(reward)
+            next_action = 0
 
             if done:
                 T = t + 1
@@ -208,15 +176,14 @@ def testing():
     _TESTS_RESULT.append(test_iteration_i)
 
 
-
-
 def make_epsilon_greedy_policy():
     """
     Creates an epsilon-greedy policy based on a
     given q-value approximator and epsilon.
     """
     def policy_fn(observation):
-        action_probs = np.ones(_ENVIROMENT_CLASS.number_actions(_ENV), dtype=float) * _EPSILON / _ENVIROMENT_CLASS.number_actions(_ENV)
+        action_probs = np.ones(_ENVIROMENT_CLASS.number_actions(_ENV), dtype=float) \
+            * _EPSILON / _ENVIROMENT_CLASS.number_actions(_ENV)
         q_values = _ESTIMATOR.predict(observation)
         best_action_idx = np.argmax(q_values)
         action_probs[best_action_idx] += (1.0 - _EPSILON)
