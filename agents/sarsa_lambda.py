@@ -116,10 +116,10 @@ def training():
 
         # Take a step
         next_state, reward, done, _ = _ENVIROMENT_CLASS.run_game_approximate(_ENV, action)
+        target = reward
         next_action = 0
 
         if done:
-            target = reward
             _ESTIMATOR.update(state, action, target)
             break
 
@@ -136,9 +136,9 @@ def training():
                     next_action = action_name
                     break
 
-             # Estimate q-value at next state-action
+            # Estimate q-value at next state-action
             q_new = _ESTIMATOR.predict(next_state, next_action)[0]
-            target = reward + _GAMMA * q_new
+            target = target + _GAMMA * q_new
             # Update step
             _ESTIMATOR.update(state, action, target)
             _ESTIMATOR.z *= _GAMMA * _LAMBDA
@@ -150,7 +150,7 @@ def training():
 
 def testing():
 
-    n_test = 10
+    n_test = 100
     test_iteration_i = {}
     for type_test in _TYPE_TEST_LIST:
         test_iteration_i.update({type_test: 0})

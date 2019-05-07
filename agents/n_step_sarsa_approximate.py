@@ -159,7 +159,7 @@ def training():
 
 def testing():
 
-    n_test = 10
+    n_test = 100
     test_iteration_i = {}
     for type_test in _TYPE_TEST_LIST:
         test_iteration_i.update({type_test: 0})

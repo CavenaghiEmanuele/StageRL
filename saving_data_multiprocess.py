@@ -427,9 +427,9 @@ if __name__ == '__main__':
 
         for i in range(n_agents):
             agent = input_for_agent(i, tests_moment)
-            agents_list.append(agent)
-            #for j in range(10):
-            #    agents_list.append(agent)
+            #agents_list.append(agent)
+            for j in range(10):
+                agents_list.append(agent)
 
 
     '''
