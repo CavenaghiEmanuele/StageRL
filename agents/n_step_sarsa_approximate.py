@@ -1,6 +1,8 @@
 import sys
+import random
 import itertools
 import numpy as np
+from agents.tiles import *
 import enviroment_choose
 from tqdm import tqdm
 sys.path.insert(0, 'enviroments')
@@ -28,7 +30,9 @@ def run_agent(env, tests_moment, n_games, n_episodes, alpha=0.1, gamma=0.6, epsi
     _GAMMA = gamma
     _EPSILON = epsilon
     _N_STEP = n_step
-    _ESTIMATOR = _ENVIROMENT_CLASS.QEstimator(env=_ENV, step_size=_ALPHA)
+    _ESTIMATOR = QEstimator(env=_ENV, step_size=_ALPHA, \
+        num_tilings=_ENVIROMENT_CLASS.num_tilings(), \
+        max_size=_ENVIROMENT_CLASS.IHT_max_size())
     _TESTS_MOMENT = tests_moment
 
 
@@ -79,7 +83,6 @@ def n_step_sarsa_approximate():
         for _ in range(100):
             testing()
 
-    print(_POLICY)
     agent_info = {"policy": _POLICY}
     return {"agent_info": agent_info, "tests_result": _TESTS_RESULT}
 
@@ -91,7 +94,15 @@ def training():
 
     # Take next action
     action_probs = _POLICY(state)
-    action = np.random.choice(np.arange(len(action_probs)), p=action_probs)
+    n = random.uniform(0, sum(action_probs))
+    top_range = 0
+    action_name = -1
+    for prob in action_probs:
+        action_name += 1
+        top_range += prob
+        if n < top_range:
+            action = action_name
+            break
 
     # Set up trackers
     states = [state]
@@ -113,9 +124,16 @@ def training():
 
             else:
                 # Take next step
-                next_action_probs = _POLICY(next_state)
-                next_action = np.random.choice(
-                    np.arange(len(next_action_probs)), p=next_action_probs)
+                action_probs = _POLICY(next_state)
+                n = random.uniform(0, sum(action_probs))
+                top_range = 0
+                action_name = -1
+                for prob in action_probs:
+                    action_name += 1
+                    top_range += prob
+                    if n < top_range:
+                        next_action = action_name
+                        break
 
                 actions.append(next_action)
 
@@ -154,15 +172,21 @@ def testing():
 
 
         while not done:
-
-            # Take next action
-            action_probs = _POLICY(state)
-            action = np.random.choice(np.arange(len(action_probs)), p=action_probs)
             '''
             Scegliere sempre e solo l'azione migliore puo' portare l'agente a restare
             bloccato, con una scelta randomica paghiamo in % di vittorie ma
             evitiamo il problema
             '''
+            action_probs = _POLICY(state)
+            n = random.uniform(0, sum(action_probs))
+            top_range = 0
+            action_name = -1
+            for prob in action_probs:
+                action_name += 1
+                top_range += prob
+                if n < top_range:
+                    action = action_name
+                    break
             test_dict = _ENVIROMENT_CLASS.test_policy_approximate(_ENV, action)
             state = test_dict["env_info"]["next_state"]
             done = test_dict["env_info"]["done"]
@@ -189,3 +213,100 @@ def make_epsilon_greedy_policy():
         action_probs[best_action_idx] += (1.0 - _EPSILON)
         return action_probs
     return policy_fn
+
+
+class QEstimator():
+    """
+    Linear action-value (q-value) function approximator for
+    semi-gradient methods with state-action featurization via tile coding.
+    """
+
+    def __init__(self, step_size, env, num_tilings=8, max_size=4096, trace=False):
+
+        self.env = env
+        self.trace = trace
+        self.max_size = max_size
+        self.num_tilings = num_tilings
+        self.tiling_dim = num_tilings
+
+        # Step size is interpreted as the fraction of the way we want
+        # to move towards the target. To compute the learning rate alpha,
+        # scale by number of tilings.
+        self.alpha = step_size / num_tilings
+
+        # Initialize index hash table (IHT) for tile coding.
+        # This assigns a unique index to each tile up to max_size tiles.
+        # Ensure max_size >= total number of tiles (num_tilings x tiling_dim x tiling_dim)
+        # to ensure no duplicates.
+        self.iht = IHT(max_size)
+
+        # Initialize weights (and optional trace)
+        self.weights = np.zeros(max_size)
+        if self.trace:
+            self.z = np.zeros(max_size)
+
+        # Tilecoding software partitions at integer boundaries
+        self.features_vector = _ENVIROMENT_CLASS.features_vector(_ENV, self.tiling_dim)
+
+    def featurize_state_action(self, state, action):
+        """
+        Returns the featurized representation for a
+        state-action pair.
+        """
+        features = []
+        for i in range(len(self.features_vector)):
+            features.append(self.features_vector[i]*state[i])
+
+        featurized = tiles(self.iht, self.num_tilings, features, [action])
+        return featurized
+
+    def predict(self, s, a=None):
+        """
+        Predicts q-value(s) using linear FA.
+        If action a is given then returns prediction
+        for single state-action pair (s, a).
+        Otherwise returns predictions for all actions
+        in environment paired with s.
+        """
+
+        if a is None:
+            features = [self.featurize_state_action(s, i) for
+                        i in range(self.env.action_space.n)]
+        else:
+            features = [self.featurize_state_action(s, a)]
+
+        return [np.sum(self.weights[f]) for f in features]
+
+    def update(self, s, a, target):
+        """
+        Updates the estimator parameters
+        for a given state and action towards
+        the target using the gradient update rule
+        (and the eligibility trace if one has been set).
+        """
+        features = self.featurize_state_action(s, a)
+        estimation = np.sum(self.weights[features])  # Linear FA
+        delta = (target - estimation)
+
+        if self.trace:
+            # self.z[features] += 1  # Accumulating trace
+            self.z[features] = 1  # Replacing trace
+            self.weights += self.alpha * delta * self.z
+        else:
+            self.weights[features] += self.alpha * delta
+
+    def reset(self, z_only=False):
+        """
+        Resets the eligibility trace (must be done at
+        the start of every epoch) and optionally the
+        weight vector (if we want to restart training
+        from scratch).
+        """
+
+        if z_only:
+            assert self.trace, 'q-value estimator has no z to reset.'
+            self.z = np.zeros(self.max_size)
+        else:
+            if self.trace:
+                self.z = np.zeros(self.max_size)
+            self.weights = np.zeros(self.max_size)
