@@ -2,7 +2,11 @@ import importlib
 
 def env_choose(env):
 
-    env_name = env.unwrapped.spec.id
+    if not isinstance(env, str):
+        env_name = env.unwrapped.spec.id
+    else:
+        env_name = env 
+
 
     if  env_name == "FrozenLake-v0" or env_name == "FrozenLake8x8-v0" or \
         env_name == "FrozenLakeNotSlippery8x8-v0" or env_name == "FrozenLakeNotSlippery4x4-v0":
