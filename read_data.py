@@ -449,9 +449,7 @@ class AppWindow(QDialog):
 
                 elif self.how_result.currentText() == "Average results":
 
-                    average = []
-                    for _ in tests_list[0][test_type]:
-                        average.append(0)
+                    average = [0] * len(tests_list[0][test_type])
 
                     for test_of_i_agent in tests_list:
                         for i in range(len(test_of_i_agent[test_type])):
@@ -468,9 +466,7 @@ class AppWindow(QDialog):
                     plt.ylabel(test_type)
                     plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
 
-                    standard_deviation = []
-                    for _ in tests_list[0][test_type]:
-                        standard_deviation.append(0)
+                    standard_deviation = [0] * len(tests_list[0][test_type])
 
                     for test_of_i_agent in tests_list:
                         for i in range(len(test_of_i_agent[test_type])):
