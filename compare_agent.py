@@ -28,12 +28,89 @@ def average_of_agents_test(tests_i_agent):
     return average_i_agent
 
 
+def percentile_10_of_agents_test(tests_i_agent):
+
+    tmp = np.zeros((len(tests_i_agent[0][test_type]), len(tests_i_agent)))
+
+    for i in range(len(tests_i_agent)):
+        for j in range(len(tests_i_agent[i][test_type])):
+            tmp[j][i] = tests_i_agent[i][test_type][j]
+
+    percentile_10 = []
+    for i in range(len(tmp)):
+        percentile_10.append(np.percentile(tmp[i], 10))
+
+    return percentile_10
+
+
+def quartile_1_of_agents_test(tests_i_agent):
+
+    tmp = np.zeros((len(tests_i_agent[0][test_type]), len(tests_i_agent)))
+
+    for i in range(len(tests_i_agent)):
+        for j in range(len(tests_i_agent[i][test_type])):
+            tmp[j][i] = tests_i_agent[i][test_type][j]
+
+    quartile_1 = []
+    for i in range(len(tmp)):
+        quartile_1.append(np.percentile(tmp[i], 25))
+
+    return quartile_1
+
+
+def median_of_agents_test(tests_i_agent):
+
+    tmp = np.zeros((len(tests_i_agent[0][test_type]), len(tests_i_agent)))
+
+    for i in range(len(tests_i_agent)):
+        for j in range(len(tests_i_agent[i][test_type])):
+            tmp[j][i] = tests_i_agent[i][test_type][j]
+
+    median = []
+    for i in range(len(tmp)):
+        median.append(np.median(tmp[i]))
+
+    return median
+
+
+def quartile_3_of_agents_test(tests_i_agent):
+
+    tmp = np.zeros((len(tests_i_agent[0][test_type]), len(tests_i_agent)))
+
+    for i in range(len(tests_i_agent)):
+        for j in range(len(tests_i_agent[i][test_type])):
+            tmp[j][i] = tests_i_agent[i][test_type][j]
+
+    quartile_3 = []
+    for i in range(len(tmp)):
+        quartile_3.append(np.percentile(tmp[i], 75))
+
+    return quartile_3
+
+
+def percentile_90_of_agents_test(tests_i_agent):
+
+    tmp = np.zeros((len(tests_i_agent[0][test_type]), len(tests_i_agent)))
+
+    for i in range(len(tests_i_agent)):
+        for j in range(len(tests_i_agent[i][test_type])):
+            tmp[j][i] = tests_i_agent[i][test_type][j]
+
+    percentile_90 = []
+    for i in range(len(tmp)):
+        percentile_90.append(np.percentile(tmp[i], 90))
+
+    return percentile_90
+
+
 
 if __name__ == '__main__':
 
     env_name = input("Insert the enviroment name: ")
     env = enviroment_choose.env_choose(env_name)
     tests_moment = input("Select the test type (final, on_run, ten_perc): " )
+    how_group_same_agent = input("Select how group the results of same agent \n" + \
+        "(Average, 10th percentile, Quartile 1, Median, Quartile 3, 90th percentile): ")
     number_of_agent_for_type = int(input("Insert the number of best agent for every type of agent: "))
     base_path = "docs/" + env_name + "/" + tests_moment + "/"
 
@@ -64,7 +141,23 @@ if __name__ == '__main__':
             for test_type in tests_i_agent[0]:
 
                 ### Raggruppamento per media
-                all_agent_tests[agent_type][test_type].append(average_of_agents_test(tests_i_agent))
+                if how_group_same_agent == "Average":
+                    all_agent_tests[agent_type][test_type].append(average_of_agents_test(tests_i_agent))
+
+                elif how_group_same_agent == "10th percentile":
+                    all_agent_tests[agent_type][test_type].append(percentile_10_of_agents_test(tests_i_agent))
+
+                elif how_group_same_agent == "Quartile 1":
+                    all_agent_tests[agent_type][test_type].append(quartile_1_of_agents_test(tests_i_agent))
+
+                elif how_group_same_agent == "Median":
+                    all_agent_tests[agent_type][test_type].append(median_of_agents_test(tests_i_agent))
+
+                elif how_group_same_agent == "Quartile 3":
+                    all_agent_tests[agent_type][test_type].append(quartile_3_of_agents_test(tests_i_agent))
+
+                elif how_group_same_agent == "90th percentile":
+                    all_agent_tests[agent_type][test_type].append(percentile_90_of_agents_test(tests_i_agent))
 
 
                 all_agent_legend[agent_type][test_type].append(create_legend(agent_type, filename))
@@ -91,6 +184,7 @@ if __name__ == '__main__':
                 elif tests_moment == "on_run":
                     agent_average.append([np.average(test_agent_i, weights=np.arange(1, 101 )), agent_type, test_type, count])
 
+            #best_test = [average, agent_type, test_type, number of agent in all_agent_tests]
             best_test = heapq.nlargest(number_of_agent_for_type, agent_average)
 
             for i in range(number_of_agent_for_type):
@@ -110,7 +204,7 @@ if __name__ == '__main__':
 
     for test_type in env.type_test():
 
-        plt.figure(test_type)
+        plt.figure(how_group_same_agent + " of " + test_type)
         plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
         plt.ylabel(test_type)
 
@@ -118,11 +212,5 @@ if __name__ == '__main__':
             if agent["test_type"] == test_type:
                 plt.plot(agent["agent"], label=agent["legend"] + " " + str(agent["average"]))
                 plt.legend(loc='upper left')
-
-
-
-
-
-
 
     plt.show()

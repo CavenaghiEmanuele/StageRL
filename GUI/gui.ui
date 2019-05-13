@@ -767,6 +767,31 @@
            <string>Average results</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>10th Percentile</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Quartile 1 (Q1)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Median</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Quartile 3 (Q3)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>90th Percentile</string>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>

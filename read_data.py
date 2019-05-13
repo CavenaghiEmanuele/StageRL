@@ -3,6 +3,7 @@ import os
 import re
 import json
 from math import pow, sqrt
+import numpy as np
 import matplotlib.pyplot as plt
 from PyQt5.QtGui import *
 from PyQt5.QtCore import pyqtSlot
@@ -433,13 +434,14 @@ class AppWindow(QDialog):
                 if not test_type in legends:
                     legends.update({test_type: list()})
 
-                plt.figure(test_type)
-                plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
-                plt.ylabel(test_type)
                 '''
                 HOW TO SHOW RESULT HERE
                 '''
                 if self.how_result.currentText() == "All results":
+
+                    plt.figure(test_type)
+                    plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
+                    plt.ylabel(test_type)
 
                     for i_test_agent in range(len(tests_list)):
                         plt.plot(tests_list[i_test_agent][test_type],  \
@@ -447,10 +449,15 @@ class AppWindow(QDialog):
                         plt.legend(loc='upper left')
 
 
+
+
                 elif self.how_result.currentText() == "Average results":
 
-                    average = [0] * len(tests_list[0][test_type])
+                    plt.figure("Average of " + test_type)
+                    plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
+                    plt.ylabel(test_type)
 
+                    average = [0] * len(tests_list[0][test_type])
                     for test_of_i_agent in tests_list:
                         for i in range(len(test_of_i_agent[test_type])):
                             average[i] += test_of_i_agent[test_type][i]
@@ -461,13 +468,11 @@ class AppWindow(QDialog):
                     plt.plot(average, label=create_legend_string(agent))
                     plt.legend(loc='upper left')
 
-
                     plt.figure("Standard deviation of " + test_type)
                     plt.ylabel(test_type)
                     plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
 
                     standard_deviation = [0] * len(tests_list[0][test_type])
-
                     for test_of_i_agent in tests_list:
                         for i in range(len(test_of_i_agent[test_type])):
                             standard_deviation[i] += pow(test_of_i_agent[test_type][i] \
@@ -478,6 +483,111 @@ class AppWindow(QDialog):
                             len(tests_list))
 
                     plt.plot(standard_deviation, label=create_legend_string(agent))
+                    plt.legend(loc='upper left')
+
+
+                elif self.how_result.currentText() == "10th Percentile":
+
+                    plt.figure("10th Percentile of " + test_type)
+                    plt.ylabel(test_type)
+                    plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
+
+
+                    tmp = np.zeros((len(tests_list[0][test_type]), len(tests_list)))
+
+                    for i in range(len(tests_list)):
+                        for j in range(len(tests_list[i][test_type])):
+                            tmp[j][i] = tests_list[i][test_type][j]
+
+                    percentile_10 = []
+                    for i in range(len(tmp)):
+                        percentile_10.append(np.percentile(tmp[i], 10))
+
+                    plt.plot(percentile_10, label=create_legend_string(agent))
+                    plt.legend(loc='upper left')
+
+
+                elif self.how_result.currentText() == "Quartile 1 (Q1)":
+
+                    plt.figure("Quartile 1 (Q1) of " + test_type)
+                    plt.ylabel(test_type)
+                    plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
+
+
+                    tmp = np.zeros((len(tests_list[0][test_type]), len(tests_list)))
+
+                    for i in range(len(tests_list)):
+                        for j in range(len(tests_list[i][test_type])):
+                            tmp[j][i] = tests_list[i][test_type][j]
+
+                    quartile_1 = []
+                    for i in range(len(tmp)):
+                        quartile_1.append(np.percentile(tmp[i], 25))
+
+                    plt.plot(quartile_1, label=create_legend_string(agent))
+                    plt.legend(loc='upper left')
+
+
+                elif self.how_result.currentText() == "Median":
+
+                    plt.figure("Median of " + test_type)
+                    plt.ylabel(test_type)
+                    plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
+
+
+                    tmp = np.zeros((len(tests_list[0][test_type]), len(tests_list)))
+
+                    for i in range(len(tests_list)):
+                        for j in range(len(tests_list[i][test_type])):
+                            tmp[j][i] = tests_list[i][test_type][j]
+
+                    median = []
+                    for i in range(len(tmp)):
+                        median.append(np.median(tmp[i]))
+
+                    plt.plot(median, label=create_legend_string(agent))
+                    plt.legend(loc='upper left')
+
+
+                elif self.how_result.currentText() == "Quartile 3 (Q3)":
+
+                    plt.figure("Quartile 3 (Q3) of " + test_type)
+                    plt.ylabel(test_type)
+                    plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
+
+
+                    tmp = np.zeros((len(tests_list[0][test_type]), len(tests_list)))
+
+                    for i in range(len(tests_list)):
+                        for j in range(len(tests_list[i][test_type])):
+                            tmp[j][i] = tests_list[i][test_type][j]
+
+                    quartile_3 = []
+                    for i in range(len(tmp)):
+                        quartile_3.append(np.percentile(tmp[i], 75))
+
+                    plt.plot(quartile_3, label=create_legend_string(agent))
+                    plt.legend(loc='upper left')
+
+
+                elif self.how_result.currentText() == "90th Percentile":
+
+                    plt.figure("90th Percentile of " + test_type)
+                    plt.ylabel(test_type)
+                    plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
+
+
+                    tmp = np.zeros((len(tests_list[0][test_type]), len(tests_list)))
+
+                    for i in range(len(tests_list)):
+                        for j in range(len(tests_list[i][test_type])):
+                            tmp[j][i] = tests_list[i][test_type][j]
+
+                    percentile_90 = []
+                    for i in range(len(tmp)):
+                        percentile_90.append(np.percentile(tmp[i], 90))
+
+                    plt.plot(percentile_90, label=create_legend_string(agent))
                     plt.legend(loc='upper left')
 
         plt.show()
