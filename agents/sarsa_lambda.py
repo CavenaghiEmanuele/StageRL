@@ -265,7 +265,7 @@ class QEstimator():
 
         if a is None:
             features = [self.featurize_state_action(s, i) for
-                        i in range(self.env.action_space.n)]
+                        i in range(_ENVIROMENT_CLASS.number_actions(_ENV))]
         else:
             features = [self.featurize_state_action(s, a)]
 

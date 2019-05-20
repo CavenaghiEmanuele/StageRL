@@ -66,7 +66,7 @@ def run_agent(env, tests_moment, gamma=1, theta=1e-8):
     return {"agent_info": agent_info, "tests_result": tmp_tests_result}
 
 
-def policy_iteration(env, gamma=1, theta=1e-8, max_iteration=1e6):
+def policy_iteration(env, gamma=1, theta=1e-8, max_iteration=500):
     policy = np.ones([len(_ENVIROMENT_CLASS.number_states(env)), \
             _ENVIROMENT_CLASS.number_actions(env)]) / \
             _ENVIROMENT_CLASS.number_actions(env)

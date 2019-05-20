@@ -435,7 +435,7 @@ if __name__ == '__main__':
     '''
     Launch agent
     '''
-    pool = Pool(len(os.sched_getaffinity(0))) #creo un pool di processi
+    pool = Pool(len(os.sched_getaffinity(0))-1) #creo un pool di processi
     results = pool.starmap(run_agent, zip(agents_list)) #Ogni agente viene affidato ad un processo
 
     pool.close()
