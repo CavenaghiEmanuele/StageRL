@@ -445,8 +445,9 @@ if __name__ == '__main__':
     '''
     Create path and saving results
     '''
-
     base_path = "docs/" + enviroment_name + "/" + tests_moment
+    #FOR MOD ENVIROMENTS
+    #base_path = "docs/" + enviroment_name + "-mod1/" + tests_moment
 
     for agent in range(len(agents_list)):
 

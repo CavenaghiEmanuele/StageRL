@@ -35,17 +35,11 @@ def type_test():
 
 
 def number_states(env):
-    return list(range(0, 38)) #numero di stati
+    return list(range(0, 1)) #numero di stati
 
 
-def number_actions(env, can_walking_away=True):
-
-    action_space = 0
-    if can_walking_away:
-        action_space = 38 #Azioni disponibili
-    else:
-        action_space = 37 #Azioni disponibili
-
+def number_actions(env):
+    action_space = 38 #Azioni disponibili
     return action_space
 
 def reset_env(env):

@@ -75,6 +75,11 @@
          </item>
          <item>
           <property name="text">
+           <string>LunarLander-v2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>MountainCar-v0</string>
           </property>
          </item>
@@ -91,6 +96,11 @@
          <item>
           <property name="text">
            <string>Taxi-v2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Taxi-v2-mod1</string>
           </property>
          </item>
         </widget>

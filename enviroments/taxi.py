@@ -1,6 +1,14 @@
 def run_game(env, action):
 
-    return env.step(action)
+    next_state, reward, done, info = env.step(action)
+
+    '''
+    Make env more difficult (MOD1)
+    '''
+    if reward == -1:
+        reward = 0
+
+    return next_state, reward, done, info
 
 
 def test_policy(env, action):
