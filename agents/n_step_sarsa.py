@@ -88,6 +88,8 @@ def n_step_sarsa():
     return {"agent_info": agent_info, "tests_result": _TESTS_RESULT}
 
 def training():
+
+    number_actions_in_episode = 0
     # Reset the environment and pick the first action
     state = _ENVIROMENT_CLASS.reset_env(_ENV)
 
@@ -102,17 +104,20 @@ def training():
             action = action_name
             break
 
+    number_actions_in_episode += 1
+
     # Set up trackers
     states = [state]
     actions = [action]
     rewards = [0.0]
+
 
     # Step through episode
     T = float('inf')
     for t in itertools.count():
         if t < T:
             # Take a step
-            next_state, reward, done, _ = _ENVIROMENT_CLASS.run_game(_ENV, action)
+            next_state, reward, done, _ = _ENVIROMENT_CLASS.run_game(_ENV, action, number_actions_in_episode)
             states.append(next_state)
             rewards.append(reward)
             next_action = 0
@@ -176,6 +181,7 @@ def testing():
 
     for _ in range(n_test):
 
+        number_actions_in_episode = 0
         done = False
         state = _ENVIROMENT_CLASS.reset_env(_ENV)
 
@@ -195,7 +201,8 @@ def testing():
             bloccato, con una scelta randomica paghiamo in % di vittorie ma
             evitiamo il problema
             '''
-            test_dict = _ENVIROMENT_CLASS.test_policy(_ENV, action)
+            number_actions_in_episode += 1
+            test_dict = _ENVIROMENT_CLASS.test_policy(_ENV, action, number_actions_in_episode)
             state = test_dict["env_info"]["next_state"]
             done = test_dict["env_info"]["done"]
 

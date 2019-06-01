@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def run_game(env, action):
+def run_game(env, action, n_action=0):
 
     next_state, reward, done, info = env.step(action)
 
@@ -15,7 +15,7 @@ def run_game_approximate(env, action):
     return env.step(action)
 
 
-def test_policy(env, action):
+def test_policy(env, action, n_action=0):
 
     next_state, reward, done, info = env.step(action)
     state_adj = (next_state - env.observation_space.low)*np.array([10, 100])

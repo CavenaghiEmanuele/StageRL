@@ -83,6 +83,7 @@ def q_learning():
 
 def training():
 
+    number_actions_in_episode = 0
     state = _ENVIROMENT_CLASS.reset_env(_ENV)
     action = 0
     reward = 0
@@ -95,7 +96,9 @@ def training():
         else:
             action = np.argmax(_Q_TABLE[state]) # Exploit learned values
 
-        next_state, reward, done, _ = _ENVIROMENT_CLASS.run_game(_ENV, action)
+        number_actions_in_episode += 1
+
+        next_state, reward, done, _ = _ENVIROMENT_CLASS.run_game(_ENV, action, number_actions_in_episode)
 
         _Q_TABLE[state, action] += _ALPHA * \
             (reward + _GAMMA * np.max(_Q_TABLE[next_state]) - _Q_TABLE[state, action])
@@ -110,6 +113,7 @@ def testing():
 
     for _ in range(n_test):
 
+        number_actions_in_episode = 0
         done = False
         state = _ENVIROMENT_CLASS.reset_env(_ENV)
 
@@ -120,7 +124,8 @@ def testing():
             else:
                 action = np.argmax(_Q_TABLE[state]) # Exploit learned values
 
-            test_dict = _ENVIROMENT_CLASS.test_policy(_ENV, action)
+            number_actions_in_episode += 1
+            test_dict = _ENVIROMENT_CLASS.test_policy(_ENV, action, number_actions_in_episode)
             state = test_dict["env_info"]["next_state"]
             done = test_dict["env_info"]["done"]
 

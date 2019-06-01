@@ -92,6 +92,8 @@ def monte_carlo_control():
 
 def training():
 
+    number_actions_in_episode = 0
+
     g = 0 # Store cumulative reward in G (initialized at 0)
     episode = []
 
@@ -112,8 +114,9 @@ def training():
                 action = action_name
                 break
 
+        number_actions_in_episode += 1
 
-        next_state, reward, done, _ = _ENVIROMENT_CLASS.run_game(_ENV, action)
+        next_state, reward, done, _ = _ENVIROMENT_CLASS.run_game(_ENV, action, number_actions_in_episode)
         episode.append([state, action, reward])
         state = next_state
 
@@ -162,6 +165,7 @@ def testing():
 
     for _ in range(n_test):
 
+        number_actions_in_episode = 0
         done = False
         state = _ENVIROMENT_CLASS.reset_env(_ENV)
 
@@ -176,12 +180,15 @@ def testing():
                 if n < top_range:
                     action = action_name
                     break
+
+            number_actions_in_episode += 1
+
             '''
             Scegliere sempre e solo l'azione migliore puo' portare l'agente a restare
             bloccato, con una scelta randomica paghiamo in % di vittorie ma
             evitiamo il problema
             '''
-            test_dict = _ENVIROMENT_CLASS.test_policy(_ENV, action)
+            test_dict = _ENVIROMENT_CLASS.test_policy(_ENV, action, number_actions_in_episode)
             state = test_dict["env_info"]["next_state"]
             done = test_dict["env_info"]["done"]
 

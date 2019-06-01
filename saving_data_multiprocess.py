@@ -191,10 +191,11 @@ def automatic_agent_generation(agent_type, n_games, n_episodes):
                 agents_list.append(agent)
 
     elif agent_type == "n-step SARSA" or agent_type == "NSS":
-        n_step = [2, 4, 8, 12, 16, 20]
+        n_step = [2, 4, 8, 12, 16]
         alpha = [0.1, 0.2, 0.3, 0.4]
         gamma = [1.0, 0.9, 0.8, 0.7]
-        epsilon = [0.01, 0.05, 0.1, 0.2]
+        epsilon = [0.2]
+        #epsilon = [0.01, 0.05, 0.1, 0.2]
 
         combination = list(itertools.product(n_step, alpha, gamma, epsilon))
 

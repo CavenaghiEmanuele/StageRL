@@ -2,7 +2,7 @@ import numpy as np
 from agents.tiles import *
 
 
-def run_game(env, action):
+def run_game(env, action, n_action=0):
 
     next_state, reward, done, info = env.step(action)
     state = next_state[0] + 32*next_state[1] + 32*11*int(next_state[2])
@@ -14,7 +14,7 @@ def run_game_approximate(env, action):
     return env.step(action)
 
 
-def test_policy(env, action):
+def test_policy(env, action, n_action=0):
 
     next_state, reward, done, info = env.step(action)
     state = next_state[0] + 32*next_state[1] + 32*11*int(next_state[2])
