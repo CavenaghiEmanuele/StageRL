@@ -5,12 +5,9 @@ def run_game(env, action, n_action=0):
     #if reward == -1:
     #    reward = 0
 
-    #if done:
-    #    reward = 10
-
     if n_action > 200:
         done = True
-        reward = -1000
+        reward = -10000
 
     return next_state, reward, done, info
 
@@ -21,7 +18,7 @@ def test_policy(env, action, n_action=0):
 
     if n_action > 200:
         done = True
-        reward = -1000
+        reward = -10000
 
     env_info = {
         "next_state": next_state,

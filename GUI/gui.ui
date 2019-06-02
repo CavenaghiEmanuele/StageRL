@@ -55,6 +55,16 @@
          </item>
          <item>
           <property name="text">
+           <string>CliffWalking-v0</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>CliffWalking-v0-mod1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>FrozenLake-v0</string>
           </property>
          </item>
