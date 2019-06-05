@@ -3,12 +3,12 @@ import matplotlib.pyplot as plt
 
 
 #Taxi
-taxi_x = [13]
+taxi_x = [14]
 taxi_y = [0.0]
 plt.scatter(taxi_x, taxi_y, label="Taxi")
 
 #Taxi (MOD1)
-taxi_x = [13]
+taxi_x = [14]
 taxi_y = [0.36]
 plt.scatter(taxi_x, taxi_y, label="Taxi (MOD1)")
 
@@ -38,20 +38,20 @@ frozenLake8x8_y = [0.53]
 plt.scatter(frozenLake8x8_x, frozenLake8x8_y, label="FrozenLake8x8")
 
 #Cliff walking
-cliff_walking_x = [14]
+cliff_walking_x = [15]
 cliff_walking_y = [0.0]
 plt.scatter(cliff_walking_x, cliff_walking_y, label="Cliff walking")
 
 #Cliff walking (MOD1)
-cliff_walking_x = [14]
-cliff_walking_y = [0.14]
+cliff_walking_x = [15]
+cliff_walking_y = [0.13]
 plt.scatter(cliff_walking_x, cliff_walking_y, label="Cliff walking (MOD1)")
 
 
 
 plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
 plt.legend(loc='upper left')
-plt.xlabel("Numero di azioni necessarie per coprire lo state space")
-plt.ylabel("Numero di stati visitati prima di avere un reward / Numero di azioni necessarie per l'esplorazione dell'ambiente")
+plt.xlabel("AEx")
+plt.ylabel("RtoR")
 
 plt.show()

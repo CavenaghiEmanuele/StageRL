@@ -5,6 +5,7 @@ import gym
 
 import agents.monte_carlo as MC
 import agents.dynamic_programming as DP
+import agents.sarsa as S
 import agents.q_learning as QL
 import agents.n_step_sarsa as NSS
 import agents.n_step_sarsa_approximate as NSSA
@@ -45,6 +46,22 @@ def input_for_agent(n_agent):
             "type": agent_type,
             "gamma": gamma,
             "theta": theta
+        }
+
+    elif agent_type == "SARSA" or agent_type == "S":
+        alpha = float(input("Insert the parameter alpha (learning rate): "))
+        gamma = float(input("Insert the parameter gamma: "))
+        epsilon = float(input("Insert the parameter epsilon: "))
+        n_games = int(input("Insert the number of games: "))
+        n_episodes = int(input("Insert the number of episodes for each game: "))
+
+        agent = {
+            "type": agent_type,
+            "alpha": alpha,
+            "gamma": gamma,
+            "epsilon": epsilon,
+            "n_games": n_games,
+            "n_episodes": n_episodes
         }
 
     elif agent_type == "Q learning" or agent_type == "QL":
@@ -150,6 +167,12 @@ def create_legend_string(agent):
         return "Dynamic programming, gamma= " + str(agent["gamma"]) + \
             ", theta= " + str(agent["theta"])
 
+    elif agent["type"] == "SARSA" or agent["type"] == "S":
+        return "SARSA, alpha= " + str(agent["alpha"]) + ", gamma= " + \
+            str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + \
+            ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + \
+            str(agent["n_episodes"])
+
     elif agent["type"] == "Q learning" or agent["type"] == "QL":
         return "Q learning, alpha= " + str(agent["alpha"]) + ", gamma= " + \
             str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + \
@@ -198,6 +221,19 @@ def run_agent(agent_dict):
             tests_moment,
             gamma=agent_dict["gamma"],
             theta=agent_dict["theta"]
+        )
+
+    elif agent_dict["type"] == "SARSA" or agent_dict["type"] == "S":
+
+        dict_result = S.run_agent(
+            enviroment,
+            tests_moment,
+            agent_dict["n_games"],
+            agent_dict["n_episodes"],
+            alpha=agent_dict["alpha"],
+            gamma=agent_dict["gamma"],
+            epsilon=agent_dict["epsilon"]
+
         )
 
     elif agent_dict["type"] == "Q learning" or agent_dict["type"] == "QL":

@@ -32,6 +32,18 @@ class DynamicProgrammingItem(QWidget):
         self.gamma.setText(agent["gamma"])
         self.theta.setText(agent["theta"])
 
+class SARSALearningItem(QWidget):
+    def __init__(self, agent):
+        super(SARSALearningItem, self).__init__()
+        loadUi("GUI/SARSALearningItem.ui", self)
+
+        self.type.setText("SARSA")
+        self.alpha.setText(agent["alpha"])
+        self.gamma.setText(agent["gamma"])
+        self.epsilon.setText(agent["epsilon"])
+        self.n_games.setText(agent["n_games"])
+        self.n_episodes.setText(agent["n_episodes"])
+
 class QLearningItem(QWidget):
     def __init__(self, agent):
         super(QLearningItem, self).__init__()
@@ -97,12 +109,11 @@ class AppWindow(QDialog):
 
         self.add_mc_to_graph.clicked.connect(self.add_mc_to_graph_clicked)
         self.add_dp_to_graph.clicked.connect(self.add_dp_to_graph_clicked)
+        self.add_sarsa_to_graph.clicked.connect(self.add_sarsa_to_graph_clicked)
         self.add_ql_to_graph.clicked.connect(self.add_ql_to_graph_clicked)
         self.add_nss_to_graph.clicked.connect(self.add_nss_to_graph_clicked)
         self.add_nssa_to_graph.clicked.connect(self.add_nssa_to_graph_clicked)
         self.add_sl_to_graph.clicked.connect(self.add_sl_to_graph_clicked)
-
-
 
 
         self.delete_current_item.clicked.connect(self.delete_current_item_clicked)
@@ -201,6 +212,58 @@ class AppWindow(QDialog):
                     Item.setSizeHint(Item_Widget.sizeHint())
                     self.agent_list_recap.addItem(Item)
                     self.agent_list_recap.setItemWidget(Item, Item_Widget)
+
+
+    @pyqtSlot()
+    def add_sarsa_to_graph_clicked(self):
+
+        env_name = self.enviroment_name_recap.text()
+        tests_moment = self.tests_moment_recap.text()
+        n_games = self.sarsa_n_games.text()
+        n_episodes = self.sarsa_n_episodes.text()
+        alpha = [self.sarsa_alpha.text()]
+        gamma = [self.sarsa_gamma.text()]
+        epsilon = [self.sarsa_epsilon.text()]
+
+        if alpha[0] == "all" and gamma[0] == "all" and epsilon[0] == "all":
+            print("Only one parameter can be \"all\"")
+
+        elif alpha[0] == "all" and gamma[0] == "all":
+            print("Only one parameter can be \"all\"")
+
+        elif alpha[0] == "all" and epsilon[0] == "all":
+            print("Only one parameter can be \"all\"")
+
+        elif gamma[0] == "all" and epsilon[0] == "all":
+            print("Only one parameter can be \"all\"")
+
+        else:
+            if alpha[0] == "all":
+                alpha = get_all_parameter("Q learning", "Alpha", env_name, tests_moment)
+
+            elif gamma[0] == "all":
+                gamma = get_all_parameter("Q learning", "gamma", env_name, tests_moment)
+
+            elif epsilon[0] == "all":
+                epsilon = get_all_parameter("Q learning", "epsilon", env_name, tests_moment)
+
+            for a in alpha:
+                for g in gamma:
+                    for e in epsilon:
+                        agent = {
+                            "type": "Q learning",
+                            "alpha": a,
+                            "gamma": g,
+                            "epsilon": e,
+                            "n_games": n_games,
+                            "n_episodes": n_episodes
+                        }
+                        agent_list.append(agent)
+                        Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
+                        Item_Widget = QLearningItem(agent)
+                        Item.setSizeHint(Item_Widget.sizeHint())
+                        self.agent_list_recap.addItem(Item)
+                        self.agent_list_recap.setItemWidget(Item, Item_Widget)
 
 
     @pyqtSlot()
@@ -605,6 +668,11 @@ def create_agent_params_string(agent):
     elif agent["type"] == "Dynamic programming" or agent["type"] == "DP":
         return "Gamma= " + str(agent["gamma"]) + ", theta= " + str(agent["theta"])
 
+    elif agent["type"] == "SARSA" or agent["type"] == "S":
+        return "Alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) \
+            + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + \
+            str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
+
     elif agent["type"] == "Q learning" or agent["type"] == "QL":
         return "Alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) \
             + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + \
@@ -642,6 +710,12 @@ def create_legend_string(agent):
     elif agent["type"] == "Dynamic programming" or agent["type"] == "DP":
         return "Dynamic programming, gamma= " + str(agent["gamma"]) + ", theta= " \
             + str(agent["theta"])
+
+    elif agent["type"] == "SARSA" or agent["type"] == "S":
+        return "Q learning, alpha= " + str(agent["alpha"]) + ", gamma= " + \
+            str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + \
+            ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + \
+            str(agent["n_episodes"])
 
     elif agent["type"] == "Q learning" or agent["type"] == "QL":
         return "Q learning, alpha= " + str(agent["alpha"]) + ", gamma= " + \
