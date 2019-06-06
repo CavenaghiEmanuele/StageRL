@@ -6,6 +6,7 @@ import gym
 import agents.monte_carlo as MC
 import agents.dynamic_programming as DP
 import agents.sarsa as S
+import agents.expected_sarsa as ES
 import agents.q_learning as QL
 import agents.n_step_sarsa as NSS
 import agents.n_step_sarsa_approximate as NSSA
@@ -49,6 +50,22 @@ def input_for_agent(n_agent):
         }
 
     elif agent_type == "SARSA" or agent_type == "S":
+        alpha = float(input("Insert the parameter alpha (learning rate): "))
+        gamma = float(input("Insert the parameter gamma: "))
+        epsilon = float(input("Insert the parameter epsilon: "))
+        n_games = int(input("Insert the number of games: "))
+        n_episodes = int(input("Insert the number of episodes for each game: "))
+
+        agent = {
+            "type": agent_type,
+            "alpha": alpha,
+            "gamma": gamma,
+            "epsilon": epsilon,
+            "n_games": n_games,
+            "n_episodes": n_episodes
+        }
+
+    elif agent_type == "Expected SARSA" or agent_type == "ES":
         alpha = float(input("Insert the parameter alpha (learning rate): "))
         gamma = float(input("Insert the parameter gamma: "))
         epsilon = float(input("Insert the parameter epsilon: "))
@@ -173,6 +190,12 @@ def create_legend_string(agent):
             ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + \
             str(agent["n_episodes"])
 
+    elif agent["type"] == "ExpectedSARSA" or agent["type"] == "ES":
+        return "Expected SARSA, alpha= " + str(agent["alpha"]) + ", gamma= " + \
+            str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + \
+            ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + \
+            str(agent["n_episodes"])
+
     elif agent["type"] == "Q learning" or agent["type"] == "QL":
         return "Q learning, alpha= " + str(agent["alpha"]) + ", gamma= " + \
             str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + \
@@ -226,6 +249,19 @@ def run_agent(agent_dict):
     elif agent_dict["type"] == "SARSA" or agent_dict["type"] == "S":
 
         dict_result = S.run_agent(
+            enviroment,
+            tests_moment,
+            agent_dict["n_games"],
+            agent_dict["n_episodes"],
+            alpha=agent_dict["alpha"],
+            gamma=agent_dict["gamma"],
+            epsilon=agent_dict["epsilon"]
+
+        )
+
+    elif agent_dict["type"] == "Expected SARSA" or agent_dict["type"] == "ES":
+
+        dict_result = ES.run_agent(
             enviroment,
             tests_moment,
             agent_dict["n_games"],
@@ -327,5 +363,6 @@ if __name__ == '__main__':
 
         plt.legend(legend, loc='upper left')
         plt.ylabel(test)
+        plt.grid(linestyle="--", linewidth=0.5, color='.25', zorder=-10)
 
     plt.show()

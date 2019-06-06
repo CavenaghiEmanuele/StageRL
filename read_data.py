@@ -44,6 +44,18 @@ class SARSALearningItem(QWidget):
         self.n_games.setText(agent["n_games"])
         self.n_episodes.setText(agent["n_episodes"])
 
+class ExpectedSARSALearningItem(QWidget):
+    def __init__(self, agent):
+        super(ExpectedSARSALearningItem, self).__init__()
+        loadUi("GUI/ExpectedSARSALearningItem.ui", self)
+
+        self.type.setText("ExpectedSARSA")
+        self.alpha.setText(agent["alpha"])
+        self.gamma.setText(agent["gamma"])
+        self.epsilon.setText(agent["epsilon"])
+        self.n_games.setText(agent["n_games"])
+        self.n_episodes.setText(agent["n_episodes"])
+
 class QLearningItem(QWidget):
     def __init__(self, agent):
         super(QLearningItem, self).__init__()
@@ -110,6 +122,7 @@ class AppWindow(QDialog):
         self.add_mc_to_graph.clicked.connect(self.add_mc_to_graph_clicked)
         self.add_dp_to_graph.clicked.connect(self.add_dp_to_graph_clicked)
         self.add_sarsa_to_graph.clicked.connect(self.add_sarsa_to_graph_clicked)
+        self.add_expected_sarsa_to_graph.clicked.connect(self.add_expected_sarsa_to_graph_clicked)
         self.add_ql_to_graph.clicked.connect(self.add_ql_to_graph_clicked)
         self.add_nss_to_graph.clicked.connect(self.add_nss_to_graph_clicked)
         self.add_nssa_to_graph.clicked.connect(self.add_nssa_to_graph_clicked)
@@ -225,46 +238,69 @@ class AppWindow(QDialog):
         gamma = [self.sarsa_gamma.text()]
         epsilon = [self.sarsa_epsilon.text()]
 
-        if alpha[0] == "all" and gamma[0] == "all" and epsilon[0] == "all":
-            print("Only one parameter can be \"all\"")
 
-        elif alpha[0] == "all" and gamma[0] == "all":
-            print("Only one parameter can be \"all\"")
+        if alpha[0] == "all":
+            alpha = get_all_parameter("SARSA", "Alpha", env_name, tests_moment)
 
-        elif alpha[0] == "all" and epsilon[0] == "all":
-            print("Only one parameter can be \"all\"")
+        elif gamma[0] == "all":
+            gamma = get_all_parameter("SARSA", "gamma", env_name, tests_moment)
 
-        elif gamma[0] == "all" and epsilon[0] == "all":
-            print("Only one parameter can be \"all\"")
+        elif epsilon[0] == "all":
+            epsilon = get_all_parameter("SARSA", "epsilon", env_name, tests_moment)
 
-        else:
-            if alpha[0] == "all":
-                alpha = get_all_parameter("Q learning", "Alpha", env_name, tests_moment)
+        for a in alpha:
+            for g in gamma:
+                for e in epsilon:
+                    agent = {
+                        "type": "SARSA",
+                        "alpha": a,
+                        "gamma": g,
+                        "epsilon": e,
+                        "n_games": n_games,
+                        "n_episodes": n_episodes
+                    }
+                    agent_list.append(agent)
+                    Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
+                    Item_Widget = SARSALearningItem(agent)
+                    Item.setSizeHint(Item_Widget.sizeHint())
+                    self.agent_list_recap.addItem(Item)
+                    self.agent_list_recap.setItemWidget(Item, Item_Widget)
 
-            elif gamma[0] == "all":
-                gamma = get_all_parameter("Q learning", "gamma", env_name, tests_moment)
+    @pyqtSlot()
+    def add_expected_sarsa_to_graph_clicked(self):
 
-            elif epsilon[0] == "all":
-                epsilon = get_all_parameter("Q learning", "epsilon", env_name, tests_moment)
+        env_name = self.enviroment_name_recap.text()
+        tests_moment = self.tests_moment_recap.text()
+        n_games = self.expected_sarsa_n_games.text()
+        n_episodes = self.expected_sarsa_n_episodes.text()
+        alpha = [self.expected_sarsa_alpha.text()]
+        gamma = [self.expected_sarsa_gamma.text()]
+        epsilon = [self.expected_sarsa_epsilon.text()]
 
-            for a in alpha:
-                for g in gamma:
-                    for e in epsilon:
-                        agent = {
-                            "type": "Q learning",
-                            "alpha": a,
-                            "gamma": g,
-                            "epsilon": e,
-                            "n_games": n_games,
-                            "n_episodes": n_episodes
-                        }
-                        agent_list.append(agent)
-                        Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
-                        Item_Widget = QLearningItem(agent)
-                        Item.setSizeHint(Item_Widget.sizeHint())
-                        self.agent_list_recap.addItem(Item)
-                        self.agent_list_recap.setItemWidget(Item, Item_Widget)
+        if alpha[0] == "all":
+            alpha = get_all_parameter("ExpectedSARSA", "Alpha", env_name, tests_moment)
+        elif gamma[0] == "all":
+            gamma = get_all_parameter("ExpectedSARSA", "gamma", env_name, tests_moment)
+        elif epsilon[0] == "all":
+            epsilon = get_all_parameter("ExpectedSARSA", "epsilon", env_name, tests_moment)
 
+        for a in alpha:
+            for g in gamma:
+                for e in epsilon:
+                    agent = {
+                        "type": "ExpectedSARSA",
+                        "alpha": a,
+                        "gamma": g,
+                        "epsilon": e,
+                        "n_games": n_games,
+                        "n_episodes": n_episodes
+                    }
+                    agent_list.append(agent)
+                    Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
+                    Item_Widget = ExpectedSARSALearningItem(agent)
+                    Item.setSizeHint(Item_Widget.sizeHint())
+                    self.agent_list_recap.addItem(Item)
+                    self.agent_list_recap.setItemWidget(Item, Item_Widget)
 
     @pyqtSlot()
     def add_ql_to_graph_clicked(self):
@@ -277,45 +313,32 @@ class AppWindow(QDialog):
         gamma = [self.ql_gamma.text()]
         epsilon = [self.ql_epsilon.text()]
 
-        if alpha[0] == "all" and gamma[0] == "all" and epsilon[0] == "all":
-            print("Only one parameter can be \"all\"")
+        if alpha[0] == "all":
+            alpha = get_all_parameter("Q learning", "Alpha", env_name, tests_moment)
 
-        elif alpha[0] == "all" and gamma[0] == "all":
-            print("Only one parameter can be \"all\"")
+        elif gamma[0] == "all":
+            gamma = get_all_parameter("Q learning", "gamma", env_name, tests_moment)
 
-        elif alpha[0] == "all" and epsilon[0] == "all":
-            print("Only one parameter can be \"all\"")
+        elif epsilon[0] == "all":
+            epsilon = get_all_parameter("Q learning", "epsilon", env_name, tests_moment)
 
-        elif gamma[0] == "all" and epsilon[0] == "all":
-            print("Only one parameter can be \"all\"")
-
-        else:
-            if alpha[0] == "all":
-                alpha = get_all_parameter("Q learning", "Alpha", env_name, tests_moment)
-
-            elif gamma[0] == "all":
-                gamma = get_all_parameter("Q learning", "gamma", env_name, tests_moment)
-
-            elif epsilon[0] == "all":
-                epsilon = get_all_parameter("Q learning", "epsilon", env_name, tests_moment)
-
-            for a in alpha:
-                for g in gamma:
-                    for e in epsilon:
-                        agent = {
-                            "type": "Q learning",
-                            "alpha": a,
-                            "gamma": g,
-                            "epsilon": e,
-                            "n_games": n_games,
-                            "n_episodes": n_episodes
-                        }
-                        agent_list.append(agent)
-                        Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
-                        Item_Widget = QLearningItem(agent)
-                        Item.setSizeHint(Item_Widget.sizeHint())
-                        self.agent_list_recap.addItem(Item)
-                        self.agent_list_recap.setItemWidget(Item, Item_Widget)
+        for a in alpha:
+            for g in gamma:
+                for e in epsilon:
+                    agent = {
+                        "type": "Q learning",
+                        "alpha": a,
+                        "gamma": g,
+                        "epsilon": e,
+                        "n_games": n_games,
+                        "n_episodes": n_episodes
+                    }
+                    agent_list.append(agent)
+                    Item = QtWidgets.QListWidgetItem(self.agent_list_recap)
+                    Item_Widget = QLearningItem(agent)
+                    Item.setSizeHint(Item_Widget.sizeHint())
+                    self.agent_list_recap.addItem(Item)
+                    self.agent_list_recap.setItemWidget(Item, Item_Widget)
 
     @pyqtSlot()
     def add_nss_to_graph_clicked(self):
@@ -328,19 +351,6 @@ class AppWindow(QDialog):
         gamma = [self.nss_gamma.text()]
         epsilon = [self.nss_epsilon.text()]
         n_step = [self.nss_n_step.text()]
-
-
-        if alpha[0] == "all":
-            alpha = get_all_parameter("n-step SARSA", "alpha", env_name, tests_moment)
-
-        elif gamma[0] == "all":
-            gamma = get_all_parameter("n-step SARSA", "gamma", env_name, tests_moment)
-
-        elif epsilon[0] == "all":
-            epsilon = get_all_parameter("n-step SARSA", "epsilon", env_name, tests_moment)
-
-        elif n_step[0] == "all":
-            n_step = get_all_parameter("n-step SARSA", "N-step", env_name, tests_moment)
 
         for a in alpha:
             for g in gamma:
@@ -375,23 +385,6 @@ class AppWindow(QDialog):
         epsilon = [self.nssa_epsilon.text()]
         n_step = [self.nssa_n_step.text()]
 
-
-        if alpha[0] == "all":
-            alpha = get_all_parameter("n-step SARSA approximate", "alpha", \
-                env_name, tests_moment)
-
-        elif gamma[0] == "all":
-            gamma = get_all_parameter("n-step SARSA approximate", "gamma", \
-                env_name, tests_moment)
-
-        elif epsilon[0] == "all":
-            epsilon = get_all_parameter("n-step SARSA approximate", "epsilon", \
-                env_name, tests_moment)
-
-        elif n_step[0] == "all":
-            n_step = get_all_parameter("n-step SARSA approximate", "N-step", \
-                env_name, tests_moment)
-
         for a in alpha:
             for g in gamma:
                 for e in epsilon:
@@ -425,27 +418,6 @@ class AppWindow(QDialog):
         epsilon = [self.sl_epsilon.text()]
         lambd = [self.sl_lambda.text()]
         n_step = [self.sl_n_step.text()]
-
-
-        if alpha[0] == "all":
-            alpha = get_all_parameter("SARSA lambda", "alpha", \
-                env_name, tests_moment)
-
-        elif gamma[0] == "all":
-            gamma = get_all_parameter("SARSA lambda", "gamma", \
-                env_name, tests_moment)
-
-        elif epsilon[0] == "all":
-            epsilon = get_all_parameter("SARSA lambda", "epsilon", \
-                env_name, tests_moment)
-
-        elif lambd[0] == "all":
-            lambd = get_all_parameter("SARSA lambda", "lambda", \
-                env_name, tests_moment)
-
-        elif n_step[0] == "all":
-            n_step = get_all_parameter("SARSA lambda", "N-step", \
-                env_name, tests_moment)
 
         for a in alpha:
             for g in gamma:
@@ -673,6 +645,11 @@ def create_agent_params_string(agent):
             + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + \
             str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
 
+    elif agent["type"] == "ExpectedSARSA" or agent["type"] == "ES":
+        return "Alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) \
+            + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + \
+            str(agent["n_games"]) + ", n_episodes= " + str(agent["n_episodes"])
+
     elif agent["type"] == "Q learning" or agent["type"] == "QL":
         return "Alpha= " + str(agent["alpha"]) + ", gamma= " + str(agent["gamma"]) \
             + ", epsilon= " + str(agent["epsilon"]) + ", n_games= " + \
@@ -712,7 +689,13 @@ def create_legend_string(agent):
             + str(agent["theta"])
 
     elif agent["type"] == "SARSA" or agent["type"] == "S":
-        return "Q learning, alpha= " + str(agent["alpha"]) + ", gamma= " + \
+        return "SARSA, alpha= " + str(agent["alpha"]) + ", gamma= " + \
+            str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + \
+            ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + \
+            str(agent["n_episodes"])
+
+    elif agent["type"] == "ExpectedSARSA" or agent["type"] == "ES":
+        return "Expected SARSA, alpha= " + str(agent["alpha"]) + ", gamma= " + \
             str(agent["gamma"]) + ", epsilon= " + str(agent["epsilon"]) + \
             ", n_games= " + str(agent["n_games"]) + ", n_episodes= " + \
             str(agent["n_episodes"])

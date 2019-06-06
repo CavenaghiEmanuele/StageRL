@@ -86,7 +86,6 @@ def training():
     number_actions_in_episode = 0
     state = _ENVIROMENT_CLASS.reset_env(_ENV)
     action = 0
-    reward = 0
     done = False
 
     while not done:
@@ -97,7 +96,6 @@ def training():
             action = np.argmax(_Q_TABLE[state]) # Exploit learned values
 
         number_actions_in_episode += 1
-
         next_state, reward, done, _ = _ENVIROMENT_CLASS.run_game(_ENV, action, number_actions_in_episode)
 
         _Q_TABLE[state, action] += _ALPHA * \

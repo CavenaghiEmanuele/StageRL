@@ -5,8 +5,8 @@ def run_game(env, action, n_action=0):
     '''
     Make env more difficult (MOD1)
     '''
-    if reward == -1:
-        reward = 0
+    #if reward == -1:
+    #    reward = 0
 
     return next_state, reward, done, info
 

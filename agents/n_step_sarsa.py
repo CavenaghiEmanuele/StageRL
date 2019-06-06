@@ -90,22 +90,9 @@ def n_step_sarsa():
 def training():
 
     number_actions_in_episode = 0
-    # Reset the environment and pick the first action
+
     state = _ENVIROMENT_CLASS.reset_env(_ENV)
-
-    # Take next action
-    n = random.uniform(0, sum(_POLICY[state]))
-    top_range = 0
-    action_name = -1
-    for prob in _POLICY[state]:
-        action_name += 1
-        top_range += prob
-        if n < top_range:
-            action = action_name
-            break
-
-    number_actions_in_episode += 1
-
+    action = take_next_action(state)
     # Set up trackers
     states = [state]
     actions = [action]
@@ -126,18 +113,10 @@ def training():
                 T = t + 1
 
             else:
-                # Take next step
-                n = random.uniform(0, sum(_POLICY[next_state]))
-                top_range = 0
-                action_name = -1
-                for prob in _POLICY[state]:
-                    action_name += 1
-                    top_range += prob
-                    if n < top_range:
-                        next_action = action_name
-                        break
-
+                next_action = take_next_action(next_state)
                 actions.append(next_action)
+                number_actions_in_episode += 1
+
 
         update_time = t + 1 - _N_STEP  # Specifies state to be updated
         if update_time >= 0:
@@ -187,15 +166,7 @@ def testing():
 
         while not done:
 
-            n = random.uniform(0, sum(_POLICY[state]))
-            top_range = 0
-            action_name = -1
-            for prob in _POLICY[state]:
-                action_name += 1
-                top_range += prob
-                if n < top_range:
-                    action = action_name
-                    break
+            action = take_next_action(state)
             '''
             Scegliere sempre e solo l'azione migliore puo' portare l'agente a restare
             bloccato, con una scelta randomica paghiamo in % di vittorie ma
@@ -213,3 +184,19 @@ def testing():
         test_iteration_i[type_test] = test_iteration_i[type_test] / n_test
 
     _TESTS_RESULT.append(test_iteration_i)
+
+
+def take_next_action(state):
+
+    # Take next action
+    n = random.uniform(0, sum(_POLICY[state]))
+    top_range = 0
+    action_name = -1
+    for prob in _POLICY[state]:
+        action_name += 1
+        top_range += prob
+        if n < top_range:
+            action = action_name
+            break
+
+    return action_name

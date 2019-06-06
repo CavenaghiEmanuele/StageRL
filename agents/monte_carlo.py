@@ -104,15 +104,7 @@ def training():
 
     while not done:
 
-        n = random.uniform(0, sum(_POLICY[state]))
-        top_range = 0
-        action_name = -1
-        for prob in _POLICY[state]:
-            action_name += 1
-            top_range += prob
-            if n < top_range:
-                action = action_name
-                break
+        action = take_next_action(state)
 
         number_actions_in_episode += 1
 
@@ -171,16 +163,7 @@ def testing():
 
         while not done:
 
-            n = random.uniform(0, sum(_POLICY[state]))
-            top_range = 0
-            action_name = -1
-            for prob in _POLICY[state]:
-                action_name += 1
-                top_range += prob
-                if n < top_range:
-                    action = action_name
-                    break
-
+            action = take_next_action(state)
             number_actions_in_episode += 1
 
             '''
@@ -199,3 +182,18 @@ def testing():
         test_iteration_i[type_test] = test_iteration_i[type_test] / n_test
 
     _TESTS_RESULT.append(test_iteration_i)
+
+
+def take_next_action(state):
+
+    n = random.uniform(0, sum(_POLICY[state]))
+    top_range = 0
+    action_name = -1
+    for prob in _POLICY[state]:
+        action_name += 1
+        top_range += prob
+        if n < top_range:
+            action = action_name
+            break
+
+    return action_name

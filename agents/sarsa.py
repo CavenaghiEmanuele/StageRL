@@ -6,7 +6,7 @@ from tqdm import tqdm
 sys.path.insert(0, 'enviroments')
 
 
-def run_agent(env, tests_moment, n_games, n_episodes, alpha=0.1, gamma=0.6, epsilon=0.1):
+def run_agent(env, tests_moment, n_games, n_episodes, alpha=0.1, gamma=0.8, epsilon=0.1):
 
     global _ENVIROMENT_CLASS
     global _ENV
@@ -90,14 +90,13 @@ def training():
 
     number_actions_in_episode = 0
     state = _ENVIROMENT_CLASS.reset_env(_ENV)
-    action = 0
-    reward = 0
+    action = take_next_action(state)
     done = False
 
     while not done:
 
         next_state, reward, done, _ = _ENVIROMENT_CLASS.run_game(_ENV, action, number_actions_in_episode)
-        next_action = take_next_action(state)
+        next_action = take_next_action(next_state)
         number_actions_in_episode += 1
 
         _Q[state, action] += _ALPHA * (reward + (_GAMMA * _Q[next_state, next_action]) - _Q[state, action] )
