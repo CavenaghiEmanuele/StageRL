@@ -2,8 +2,8 @@ def run_game(env, action, n_action=0):
 
     next_state, reward, done, info = env.step(action)
 
-    if reward == -1:
-        reward = 0
+    #if reward == -1:
+    #    reward = 0
 
     if n_action > 200:
         done = True

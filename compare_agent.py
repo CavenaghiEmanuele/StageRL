@@ -211,6 +211,9 @@ if __name__ == '__main__':
         for agent in bests_agent:
             if agent["test_type"] == test_type:
                 plt.plot(agent["agent"], label=agent["legend"] + " " + str(agent["average"]))
-                plt.legend(loc='upper left')
+                plt.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
 
+        ax = plt.subplot(111)
+        box = ax.get_position()
+        ax.set_position([box.x0, box.y0, box.width*0.65, box.height])
     plt.show()

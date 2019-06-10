@@ -67,7 +67,7 @@ def input_for_agent(n_agent, tests_moment):
             "n_episodes": n_episodes
         }
 
-    elif agent_type == "Expected SARSA" or agent_type == "ES":
+    elif agent_type == "ExpectedSARSA" or agent_type == "ES":
         alpha = float(input("Insert the parameter alpha (learning rate): "))
         gamma = float(input("Insert the parameter gamma: "))
         epsilon = float(input("Insert the parameter epsilon: "))
@@ -75,7 +75,7 @@ def input_for_agent(n_agent, tests_moment):
         n_episodes = int(input("Insert the number of episodes for each game: "))
 
         agent = {
-            "type": "Expected SARSA",
+            "type": "ExpectedSARSA",
             "alpha": alpha,
             "gamma": gamma,
             "epsilon": epsilon,
@@ -221,7 +221,7 @@ def automatic_agent_generation(agent_type, n_games, n_episodes):
             for _ in range(10):
                 agents_list.append(agent)
 
-    elif agent_type == "Expected SARSA" or agent_type == "ES":
+    elif agent_type == "ExpectedSARSA" or agent_type == "ES":
         alpha = [0.1, 0.2, 0.3, 0.4, 0.5]
         gamma = [1.0, 0.9, 0.8, 0.7, 0.5]
         epsilon = [0.01, 0.05, 0.1, 0.2, 0.3]
@@ -230,7 +230,7 @@ def automatic_agent_generation(agent_type, n_games, n_episodes):
 
         for item in combination:
             agent = {
-                "type": "Expected SARSA",
+                "type": "ExpectedSARSA",
                 "alpha": item[0],
                 "gamma": item[1],
                 "epsilon": item[2],
@@ -428,7 +428,7 @@ def run_agent(agent_dict):
             epsilon=agent_dict["epsilon"]
         )
 
-    elif agent_dict["type"] == "Expected SARSA" or agent_dict["type"] == "ES":
+    elif agent_dict["type"] == "ExpectedSARSA" or agent_dict["type"] == "ES":
 
         dict_result = ES.run_agent(
             enviroment,
