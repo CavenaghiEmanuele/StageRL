@@ -14,7 +14,7 @@ def env_choose(env):
         return importlib.import_module("frozen_lake")
 
     elif  env_name == "Taxi-v2":
-
+    #elif  env_name == "Taxi-v2-mod1":
         return importlib.import_module("taxi")
 
     elif  env_name == "Roulette-v0":
@@ -30,7 +30,7 @@ def env_choose(env):
         return importlib.import_module("nchain")
 
     elif  env_name == "CliffWalking-v0":
-
+    #elif env_name == "CliffWalking-v0-mod1":
         return importlib.import_module("cliff_walking")
 
     elif  env_name == "MountainCar-v0":

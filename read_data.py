@@ -352,6 +352,18 @@ class AppWindow(QDialog):
         epsilon = [self.nss_epsilon.text()]
         n_step = [self.nss_n_step.text()]
 
+        if alpha[0] == "all":
+            alpha = get_all_parameter("n-step SARSA", "alpha", env_name, tests_moment)
+
+        elif gamma[0] == "all":
+            gamma = get_all_parameter("n-step SARSA", "gamma", env_name, tests_moment)
+
+        elif epsilon[0] == "all":
+            epsilon = get_all_parameter("n-step SARSA", "epsilon", env_name, tests_moment)
+
+        elif n_step[0] == "all":
+            n_step = get_all_parameter("n-step SARSA", "N-step", env_name, tests_moment)
+
         for a in alpha:
             for g in gamma:
                 for e in epsilon:
@@ -384,6 +396,18 @@ class AppWindow(QDialog):
         gamma = [self.nssa_gamma.text()]
         epsilon = [self.nssa_epsilon.text()]
         n_step = [self.nssa_n_step.text()]
+
+        if alpha[0] == "all":
+            alpha = get_all_parameter("n-step SARSA approximate", "alpha", env_name, tests_moment)
+
+        elif gamma[0] == "all":
+            gamma = get_all_parameter("n-step SARSA approximate", "gamma", env_name, tests_moment)
+
+        elif epsilon[0] == "all":
+            epsilon = get_all_parameter("n-step SARSA approximate", "epsilon", env_name, tests_moment)
+
+        elif n_step[0] == "all":
+            n_step = get_all_parameter("n-step SARSA approximate", "N-step", env_name, tests_moment)
 
         for a in alpha:
             for g in gamma:
@@ -418,6 +442,21 @@ class AppWindow(QDialog):
         epsilon = [self.sl_epsilon.text()]
         lambd = [self.sl_lambda.text()]
         n_step = [self.sl_n_step.text()]
+
+        if alpha[0] == "all":
+            alpha = get_all_parameter("SARSA lambda", "alpha", env_name, tests_moment)
+
+        elif gamma[0] == "all":
+            gamma = get_all_parameter("SARSA lambda", "gamma", env_name, tests_moment)
+
+        elif epsilon[0] == "all":
+            epsilon = get_all_parameter("SARSA lambda", "epsilon", env_name, tests_moment)
+
+        elif n_step[0] == "all":
+            n_step = get_all_parameter("SARSA lambda", "N-step", env_name, tests_moment)
+
+        elif lambd[0] == "all":
+            lambd = get_all_parameter("SARSA lambda", "lambda", env_name, tests_moment)
 
         for a in alpha:
             for g in gamma:
